@@ -32,6 +32,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error?.message || 'ไม่สามารถสร้างผู้ใช้ได้' }, { status: 400 })
     }
 
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ role: 'admin' })
+      .eq('id', data.user.id)
+
+    if (updateError) {
+      return NextResponse.json({ error: 'สมัครสำเร็จแต่ตั้งค่า admin ไม่สำเร็จ' }, { status: 500 })
+    }
+
     return response
 
   } catch (error) {
