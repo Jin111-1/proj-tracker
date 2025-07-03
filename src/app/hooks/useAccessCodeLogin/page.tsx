@@ -14,7 +14,7 @@ export function useAccessCodeLogin() {
       })
       if (response.status === 200) {
         setAccessResult('✅ เข้าสู่ระบบด้วย Access Code สำเร็จ')
-        router.push('/pages/adminDashboard')
+        router.push('/pages/userDashboard')
       } else {
         setAccessResult(`❌ ${response.data.error}`)
       }
