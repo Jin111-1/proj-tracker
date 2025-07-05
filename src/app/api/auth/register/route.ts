@@ -19,8 +19,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password ต้องมีความยาวอย่างน้อย 6 ตัวอักษร' }, { status: 400 })
     }
 
-    const response = NextResponse.json({ message: 'ลงทะเบียนสำเร็จ' }, { status: 201 })
-
+    // สร้าง response object สำหรับจัดการ cookies
+    const response = NextResponse.next()
+    
+    // ใช้ createSupabaseServerClient จาก supabaseCookie.ts
     const supabase = createSupabaseServerClient(request, response, remember)
 
     const { data, error } = await supabase.auth.signUp({
@@ -41,7 +43,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'สมัครสำเร็จแต่ตั้งค่า admin ไม่สำเร็จ' }, { status: 500 })
     }
 
-    return response
+    // สร้าง response ใหม่พร้อม cookies
+    const successResponse = NextResponse.json({ message: 'ลงทะเบียนสำเร็จ' }, { status: 201 })
+    
+    // คัดลอก cookies จาก response ที่สร้างไว้
+    const setCookieHeaders = response.headers.getSetCookie()
+    setCookieHeaders.forEach(cookie => {
+      successResponse.headers.append('Set-Cookie', cookie)
+    })
+
+    return successResponse
 
   } catch (error) {
     console.error('Register error:', error)
