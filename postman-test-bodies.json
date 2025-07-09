@@ -142,5 +142,203 @@
       "5. วันที่ต้องอยู่ในรูปแบบ YYYY-MM-DD",
       "6. ตัวเลขต้องเป็น number ไม่ใช่ string"
     ]
+  },
+  "edit-project-examples": {
+    "description": "ตัวอย่าง Body สำหรับทดสอบ API edit-proj ใน Postman",
+    "endpoint": "PUT /api/edit-proj",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "examples": {
+      "update-name-only": {
+        "description": "อัปเดตเฉพาะชื่อโปรเจ็ค",
+        "body": {
+          "id": "project-uuid-here",
+          "name": "ชื่อโปรเจ็คใหม่"
+        }
+      },
+      "update-description": {
+        "description": "อัปเดตคำอธิบายโปรเจ็ค",
+        "body": {
+          "id": "project-uuid-here",
+          "description": "คำอธิบายโปรเจ็คที่อัปเดตใหม่"
+        }
+      },
+      "update-status": {
+        "description": "เปลี่ยนสถานะโปรเจ็ค",
+        "body": {
+          "id": "project-uuid-here",
+          "status": "completed"
+        }
+      },
+      "update-progress": {
+        "description": "อัปเดตความคืบหน้า",
+        "body": {
+          "id": "project-uuid-here",
+          "progress_percentage": 75
+        }
+      },
+      "update-dates": {
+        "description": "อัปเดตวันที่ต่างๆ",
+        "body": {
+          "id": "project-uuid-here",
+          "start_date": "2024-01-15",
+          "estimated_end_date": "2024-03-15",
+          "actual_end_date": "2024-03-10"
+        }
+      },
+      "update-budget": {
+        "description": "อัปเดตงบประมาณ",
+        "body": {
+          "id": "project-uuid-here",
+          "budget": 750000
+        }
+      },
+      "complete-project-update": {
+        "description": "อัปเดตหลายฟิลด์พร้อมกัน",
+        "body": {
+          "id": "project-uuid-here",
+          "name": "โปรเจ็คบ้านเดี่ยว 3 ห้องนอน (อัปเดต)",
+          "description": "โครงการตกแต่งภายในบ้านเดี่ยว 3 ห้องนอน 2 ห้องน้ำ สไตล์สแกนดิเนเวียน - ใกล้เสร็จแล้ว",
+          "status": "completed",
+          "progress_percentage": 100,
+          "actual_end_date": "2024-03-10",
+          "budget": 550000
+        }
+      },
+      "change-access-code": {
+        "description": "เปลี่ยน access_code",
+        "body": {
+          "id": "project-uuid-here",
+          "access_code": "NEW123"
+        }
+      },
+      "cancel-project": {
+        "description": "ยกเลิกโปรเจ็ค",
+        "body": {
+          "id": "project-uuid-here",
+          "status": "cancelled",
+          "description": "โปรเจ็คถูกยกเลิกเนื่องจากเหตุผลส่วนตัว"
+        }
+      },
+      "reactivate-project": {
+        "description": "เปิดใช้งานโปรเจ็คใหม่",
+        "body": {
+          "id": "project-uuid-here",
+          "status": "active",
+          "progress_percentage": 25
+        }
+      }
+    },
+    "expected-responses": {
+      "success": {
+        "status": 200,
+        "body": {
+          "message": "อัปเดตโปรเจ็คสำเร็จ",
+          "project": {
+            "id": "project-uuid",
+            "name": "ชื่อโปรเจ็คที่อัปเดต",
+            "description": "คำอธิบายที่อัปเดต",
+            "access_code": "ABC123",
+            "status": "active",
+            "progress_percentage": 50,
+            "budget": 500000,
+            "created_by": "user-uuid",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-15T00:00:00Z"
+          }
+        }
+      },
+      "error-missing-id": {
+        "status": 400,
+        "body": {
+          "error": "กรุณาระบุ ID ของโปรเจ็ค"
+        }
+      },
+      "error-project-not-found": {
+        "status": 404,
+        "body": {
+          "error": "ไม่พบโปรเจ็คที่ต้องการแก้ไข"
+        }
+      },
+      "error-no-permission": {
+        "status": 403,
+        "body": {
+          "error": "ไม่มีสิทธิ์ในการแก้ไขโปรเจ็คนี้"
+        }
+      },
+      "error-invalid-status": {
+        "status": 400,
+        "body": {
+          "error": "ค่า status ไม่ถูกต้อง ต้องเป็นหนึ่งใน: active, completed, cancelled"
+        }
+      },
+      "error-invalid-progress": {
+        "status": 400,
+        "body": {
+          "error": "progress_percentage ต้องอยู่ระหว่าง 0-100"
+        }
+      },
+      "error-duplicate-access-code": {
+        "status": 400,
+        "body": {
+          "error": "access_code นี้มีอยู่แล้ว กรุณาใช้ access_code อื่น"
+        }
+      },
+      "error-unauthorized": {
+        "status": 401,
+        "body": {
+          "error": "ไม่พบผู้ใช้ที่ login"
+        }
+      }
+    },
+    "testing-tips": [
+      "1. ต้อง login ก่อนทดสอบ API นี้",
+      "2. ฟิลด์ id เป็น required",
+      "3. เจ้าของโปรเจ็คหรือ admin เท่านั้นที่แก้ไขได้",
+      "4. status ต้องเป็น: active, completed, cancelled เท่านั้น",
+      "5. progress_percentage ต้องอยู่ระหว่าง 0-100",
+      "6. access_code ต้องไม่ซ้ำกับที่มีอยู่",
+      "7. วันที่ต้องอยู่ในรูปแบบ YYYY-MM-DD",
+      "8. ตัวเลขต้องเป็น number ไม่ใช่ string",
+      "9. อัปเดตเฉพาะฟิลด์ที่มีการเปลี่ยนแปลง"
+    ]
+  },
+  "delete-project-examples": {
+    "description": "ตัวอย่างสำหรับทดสอบ API ลบโปรเจ็ค",
+    "endpoint": "DELETE /api/edit-proj?id=project-uuid",
+    "examples": {
+      "delete-project": {
+        "description": "ลบโปรเจ็ค",
+        "url": "/api/edit-proj?id=project-uuid-here",
+        "method": "DELETE"
+      }
+    },
+    "expected-responses": {
+      "success": {
+        "status": 200,
+        "body": {
+          "message": "ลบโปรเจ็คสำเร็จ"
+        }
+      },
+      "error-missing-id": {
+        "status": 400,
+        "body": {
+          "error": "กรุณาระบุ ID ของโปรเจ็ค"
+        }
+      },
+      "error-project-not-found": {
+        "status": 404,
+        "body": {
+          "error": "ไม่พบโปรเจ็คที่ต้องการลบ"
+        }
+      },
+      "error-no-permission": {
+        "status": 403,
+        "body": {
+          "error": "ไม่มีสิทธิ์ในการลบโปรเจ็คนี้"
+        }
+      }
+    }
   }
 } 

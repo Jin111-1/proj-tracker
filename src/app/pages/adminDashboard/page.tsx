@@ -1,166 +1,122 @@
 "use client"
 
-import { useState, useEffect } from 'react';
-import { useCreateProject } from '@/app/hooks/useCreateProjects/page';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, DollarSign, Users, LogOut } from 'lucide-react';
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  access_code: string;
-  status: string;
-  progress_percentage: number;
-  start_date: string;
-  estimated_end_date: string;
-  actual_end_date: string;
-  budget: number;
-  created_at: string;
-  updated_at: string;
-}
+import { useState } from 'react';
+import { useProjects } from '@/app/hooks/useProjects/page';
+import { useAuth } from '@/app/hooks/useAuth/page';
+import { useProjectForm } from '@/app/hooks/useProjectForm/page';
+import { useProjectUtils } from '@/app/hooks/useProjectUtils/page';
+import { useEditProject, type Project } from '@/app/hooks/useEditProject/page';
+import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, DollarSign, Users, LogOut, X } from 'lucide-react';
 
 export default function AdminDashboard() {
-  const [open, setOpen] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const { createProject, loading: createLoading, error, data } = useCreateProject();
-  const router = useRouter();
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  
+  // Hooks
+  const { 
+    filteredProjects, 
+    loading, 
+    searchTerm, 
+    setSearchTerm, 
+    statusFilter, 
+    setStatusFilter, 
+    loadProjects, 
+    stats 
+  } = useProjects();
+  
+  const { logout } = useAuth();
+  const { 
+    form, 
+    isOpen: open, 
+    loading: createLoading, 
+    handleChange, 
+    handleSubmit, 
+    openModal: setOpen, 
+    closeModal 
+  } = useProjectForm(loadProjects);
+  
+  const { editProject, deleteProject, loading: editLoading } = useEditProject();
+  const { 
+    formatDate, 
+    formatCurrency, 
+    getStatusColor, 
+    getStatusText 
+  } = useProjectUtils();
 
-  // State สำหรับแต่ละฟิลด์
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    access_code: '',
-    bucket_name: '',
-    status: 'active',
-    progress_percentage: '0',
-    start_date: '',
-    estimated_end_date: '',
-    actual_end_date: '',
-    budget: '',
-  });
 
-  // โหลดโปรเจ็คทั้งหมด
-  useEffect(() => {
-    loadProjects();
-  }, []);
 
-  const loadProjects = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/api/projects');
-      setProjects(response.data || []);
-    } catch (err) {
-      console.error('Error loading projects:', err);
-    } finally {
-      setLoading(false);
-    }
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setEditModalOpen(true);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const {
-      name, description, access_code, bucket_name, status, progress_percentage,
-      start_date, estimated_end_date, actual_end_date, budget
-    } = form;
-    
-    try {
-    const result = await createProject({
-      name,
-      description,
-      access_code,
-      bucket_name: bucket_name || undefined,
-      status: status || undefined,
-      progress_percentage: progress_percentage ? Number(progress_percentage) : undefined,
-      start_date: start_date || undefined,
-      estimated_end_date: estimated_end_date || undefined,
-      actual_end_date: actual_end_date || undefined,
-      budget: budget ? Number(budget) : undefined,
-    });
-      
-    // นำทางไปยังหน้าโปรเจ็ค
-    if (result?.data?.project_id) {
-      router.push(`/pages/project/${result.data.project_id}`);
+  const handleDeleteProject = async (projectId: string) => {
+    if (confirm('คุณแน่ใจหรือไม่ที่จะลบโปรเจ็คนี้? การดำเนินการนี้ไม่สามารถยกเลิกได้')) {
+      try {
+        await deleteProject(projectId);
+        loadProjects(); // โหลดโปรเจ็คใหม่
+        alert('ลบโปรเจ็คสำเร็จ');
+      } catch (err) {
+        console.error('Error deleting project:', err);
+        alert('เกิดข้อผิดพลาดในการลบโปรเจ็ค');
       }
-      
-      // รีเซ็ตฟอร์มและปิด modal
-      setForm({
-        name: '',
-        description: '',
-        access_code: '',
-        bucket_name: '',
-        status: 'active',
-        progress_percentage: '0',
-        start_date: '',
-        estimated_end_date: '',
-        actual_end_date: '',
-        budget: '',
-      });
-      setOpen(false);
-      
-      // โหลดโปรเจ็คใหม่
-      loadProjects();
-    } catch (err) {
-      console.error('Error creating project:', err);
     }
   };
 
-  const handleLogout = async () => {
+  const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingProject) return;
+
     try {
-      await axios.post('/api/auth/logout');
-      router.push('/pages/home-landing');
+      const formData = new FormData(e.currentTarget);
+      const updateData: any = {
+        id: editingProject.id
+      };
+
+      // เตรียมข้อมูลสำหรับอัปเดต
+      const name = formData.get('name') as string;
+      const description = formData.get('description') as string;
+      const access_code = formData.get('access_code') as string;
+      const status = formData.get('status') as string;
+      const progress_percentage = formData.get('progress_percentage') as string;
+      const start_date = formData.get('start_date') as string;
+      const estimated_end_date = formData.get('estimated_end_date') as string;
+      const actual_end_date = formData.get('actual_end_date') as string;
+      const budget = formData.get('budget') as string;
+
+      if (name && name !== editingProject.name) updateData.name = name;
+      if (description !== editingProject.description) updateData.description = description;
+      if (access_code && access_code !== editingProject.access_code) updateData.access_code = access_code;
+      if (status && status !== editingProject.status) updateData.status = status;
+      if (progress_percentage !== (editingProject.progress_percentage || 0).toString()) {
+        updateData.progress_percentage = Number(progress_percentage);
+      }
+      // จัดการวันที่ - ส่ง null ถ้าว่าง
+      if (start_date !== editingProject.start_date) {
+        updateData.start_date = start_date || null;
+      }
+      if (estimated_end_date !== editingProject.estimated_end_date) {
+        updateData.estimated_end_date = estimated_end_date || null;
+      }
+      if (actual_end_date !== editingProject.actual_end_date) {
+        updateData.actual_end_date = actual_end_date || null;
+      }
+      if (budget !== (editingProject.budget || 0).toString()) {
+        updateData.budget = budget ? Number(budget) : null;
+      }
+
+      await editProject(updateData);
+      loadProjects(); // โหลดโปรเจ็คใหม่
+      setEditModalOpen(false);
+      setEditingProject(null);
+      alert('อัปเดตโปรเจ็คสำเร็จ');
     } catch (err) {
-      console.error('Error logging out:', err);
+      console.error('Error updating project:', err);
+      alert('เกิดข้อผิดพลาดในการอัปเดตโปรเจ็ค');
     }
   };
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('th-TH');
-  };
 
-  const formatCurrency = (amount: number) => {
-    if (!amount) return '-';
-    return new Intl.NumberFormat('th-TH', {
-      style: 'currency',
-      currency: 'THB'
-    }).format(amount);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'กำลังดำเนินการ';
-      case 'completed': return 'เสร็จสิ้น';
-      case 'cancelled': return 'ยกเลิก';
-      default: return status;
-    }
-  };
-
-  // กรองโปรเจ็คตาม search และ status
-  const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.access_code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -184,7 +140,7 @@ export default function AdminDashboard() {
                 <span>สร้างโปรเจ็ค</span>
               </button>
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition"
               >
                 <LogOut className="h-4 w-4" />
@@ -205,7 +161,7 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">โปรเจ็คทั้งหมด</p>
-                <p className="text-2xl font-semibold text-gray-900">{projects.length}</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
               </div>
             </div>
           </div>
@@ -218,7 +174,7 @@ export default function AdminDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">กำลังดำเนินการ</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {projects.filter(p => p.status === 'active').length}
+                  {stats.active}
                 </p>
               </div>
             </div>
@@ -232,7 +188,7 @@ export default function AdminDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">เสร็จสิ้น</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {projects.filter(p => p.status === 'completed').length}
+                  {stats.completed}
                 </p>
               </div>
             </div>
@@ -246,7 +202,7 @@ export default function AdminDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">งบประมาณรวม</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {formatCurrency(projects.reduce((sum, p) => sum + (p.budget || 0), 0))}
+                  {formatCurrency(stats.totalBudget)}
                 </p>
               </div>
             </div>
@@ -372,26 +328,21 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-2">
                           <button
-                            onClick={() => router.push(`/pages/project/${project.id}`)}
+                            onClick={() => window.location.href = `/pages/project/${project.id}`}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition"
                             title="ดูรายละเอียด"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => router.push(`/pages/project/${project.id}?edit=true`)}
+                            onClick={() => handleEditProject(project)}
                             className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition"
                             title="แก้ไข"
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => {
-                              if (confirm('คุณแน่ใจหรือไม่ที่จะลบโปรเจ็คนี้?')) {
-                                // TODO: Implement delete project
-                                console.log('Delete project:', project.id);
-                              }
-                            }}
+                            onClick={() => handleDeleteProject(project.id)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition"
                             title="ลบ"
                           >
@@ -534,7 +485,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-end space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => setOpen(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
                 >
                   ยกเลิก
@@ -545,6 +496,166 @@ export default function AdminDashboard() {
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
                 >
                   {createLoading ? 'กำลังสร้าง...' : 'สร้างโปรเจ็ค'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {editModalOpen && editingProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-lg font-medium text-gray-900">แก้ไขโปรเจ็ค</h2>
+              <button
+                onClick={() => {
+                  setEditModalOpen(false);
+                  setEditingProject(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="px-6 py-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ชื่อโปรเจ็ค *
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={editingProject.name}
+                  required
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  รายละเอียด
+                </label>
+                <textarea
+                  name="description"
+                  defaultValue={editingProject.description || ''}
+                  rows={3}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  รหัสการเข้าถึง *
+                </label>
+                <input
+                  type="text"
+                  name="access_code"
+                  defaultValue={editingProject.access_code}
+                  required
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  สถานะ
+                </label>
+                <select
+                  name="status"
+                  defaultValue={editingProject.status}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="active">กำลังดำเนินการ</option>
+                  <option value="completed">เสร็จสิ้น</option>
+                  <option value="cancelled">ยกเลิก</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  เปอร์เซ็นต์ความคืบหน้า
+                </label>
+                <input
+                  type="number"
+                  name="progress_percentage"
+                  defaultValue={editingProject.progress_percentage || 0}
+                  min={0}
+                  max={100}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    วันที่เริ่ม
+                  </label>
+                  <input
+                    type="date"
+                    name="start_date"
+                    defaultValue={editingProject.start_date || ''}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    วันที่คาดว่าจะเสร็จ
+                  </label>
+                  <input
+                    type="date"
+                    name="estimated_end_date"
+                    defaultValue={editingProject.estimated_end_date || ''}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  วันที่เสร็จสิ้นจริง
+                </label>
+                <input
+                  type="date"
+                  name="actual_end_date"
+                  defaultValue={editingProject.actual_end_date || ''}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  งบประมาณ
+                </label>
+                <input
+                  type="number"
+                  name="budget"
+                  defaultValue={editingProject.budget || ''}
+                  min={0}
+                  step="0.01"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="flex items-center justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModalOpen(false);
+                    setEditingProject(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
+                >
+                  {editLoading ? 'กำลังอัปเดต...' : 'อัปเดตโปรเจ็ค'}
                 </button>
               </div>
             </form>
