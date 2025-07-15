@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseCookie';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const response = NextResponse.next();
     const supabase = createSupabaseServerClient(req, response);
-    const { id } = params;
+    const { id } = await params;
     if (!id) return NextResponse.json({ error: 'ไม่พบ id' }, { status: 400 });
     const { data, error } = await supabase
       .from('projects')

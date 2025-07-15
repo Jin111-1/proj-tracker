@@ -31,7 +31,7 @@ export default function AdminDashboard() {
     loading: createLoading, 
     handleChange, 
     handleSubmit, 
-    openModal: setOpen, 
+    openModal, 
     closeModal 
   } = useProjectForm(loadProjects);
   
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => setOpen(true)}
+                onClick={() => openModal()}
                 className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 <Plus className="h-4 w-4" />
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
               <h3 className="mt-2 text-sm font-medium text-gray-900">ไม่มีโปรเจ็ค</h3>
               <p className="mt-1 text-sm text-gray-500">เริ่มต้นโดยการสร้างโปรเจ็คแรก</p>
         <button 
-          onClick={() => setOpen(true)} 
+          onClick={() => openModal()} 
                 className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           สร้างโปรเจ็ค
@@ -528,7 +528,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   name="name"
-                  defaultValue={editingProject.name}
+                  defaultValue={editingProject.name || ''}
                   required
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -553,7 +553,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   name="access_code"
-                  defaultValue={editingProject.access_code}
+                  defaultValue={editingProject.access_code || ''}
                   required
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -565,7 +565,7 @@ export default function AdminDashboard() {
                 </label>
                 <select
                   name="status"
-                  defaultValue={editingProject.status}
+                  defaultValue={editingProject.status || 'active'}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="active">กำลังดำเนินการ</option>
