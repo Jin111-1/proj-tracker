@@ -34,14 +34,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error?.message || 'ไม่สามารถสร้างผู้ใช้ได้' }, { status: 400 })
     }
 
-    const { error: updateError } = await supabase
+    // เพิ่มข้อมูล user ลงในตาราง users
+    const { error: insertError } = await supabase
       .from('users')
-      .update({ role: 'admin' })
-      .eq('id', data.user.id)
+      .insert({
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata?.full_name || '',
+        role: 'admin',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
 
-    if (updateError) {
-      return NextResponse.json({ error: 'สมัครสำเร็จแต่ตั้งค่า admin ไม่สำเร็จ' }, { status: 500 })
+    if (insertError) {
+      console.error('Error inserting user to users table:', insertError)
+      return NextResponse.json({ error: 'สมัครสำเร็จแต่บันทึกข้อมูลผู้ใช้ไม่สำเร็จ' }, { status: 500 })
     }
+
+    console.log('User inserted successfully to users table:', data.user.id)
 
     // สร้าง response ใหม่พร้อม cookies
     const successResponse = NextResponse.json({ message: 'ลงทะเบียนสำเร็จ' }, { status: 201 })

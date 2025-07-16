@@ -3,12 +3,12 @@ import { createSupabaseServerClient } from '@/utils/supabaseCookie';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context : { params : Promise<{ id: string }> }
 ) {
   try {
     const response = NextResponse.next();
     const supabase = createSupabaseServerClient(req, response);
-    const { id } = params;
+    const { id } = await context.params;
 
     // ตรวจสอบ authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -28,11 +28,18 @@ export async function POST(
     }
 
     // ตรวจสอบสิทธิ์ (เฉพาะแอดมินหรือเจ้าของโปรเจ็ค)
-    const { data: userData } = await supabase
+    console.log('Checking user in users table with ID:', user.id);
+    const { data: userData, error: userCheckError } = await supabase
       .from('users')
-      .select('role')
+      .select('*')
       .eq('id', user.id)
       .single();
+      
+    console.log('User data from users table:', userData);
+    console.log('User check error:', userCheckError);
+
+    // เพิ่ม logic: ถ้ายังไม่มี user ใน table users ให้ insert
+    
 
     if (userData?.role !== 'admin' && project.created_by !== user.id) {
       return NextResponse.json({ error: 'ไม่มีสิทธิ์อัปโหลดรูปภาพ' }, { status: 403 });
@@ -83,6 +90,14 @@ export async function POST(
         .getPublicUrl(filePath);
 
       // บันทึกข้อมูลรูปภาพลงฐานข้อมูล (ใช้ตาราง photos)
+      console.log('Inserting photo with data:', {
+        project_id: id,
+        file_name: file.name,
+        file_path: urlData.publicUrl,
+        file_size: file.size,
+        uploaded_by: user.id
+      });
+      
       const { data: imageData, error: dbError } = await supabase
         .from('photos')
         .insert({
@@ -91,9 +106,9 @@ export async function POST(
           file_path: urlData.publicUrl,
           file_size: file.size,
           uploaded_by: user.id
-        })
-        .select()
-        .single();
+        });
+      console.log('imageData:', imageData);
+      console.log('dbError:', dbError);
 
       if (dbError) {
         console.error('Database error:', dbError);

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Upload, Image, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Plus, Trash2, Eye } from 'lucide-react';
+import { Upload, Image, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Plus, Trash2, Eye, Maximize2, X } from 'lucide-react';
+import { useProjectImages } from '../../../hooks/useProjectsPhoto/page';
 
 interface Project {
   id: string;
@@ -40,12 +41,15 @@ export default function ProjectDetailPage() {
   const { id } = params as { id: string };
   
   const [project, setProject] = useState<Project | null>(null);
-  const [images, setImages] = useState<ProjectImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'images' | 'documents' | 'messages' | 'appointments' | 'expenses'>('overview');
-  const [uploading, setUploading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<ProjectImage | null>(null);
+
+  // ใช้ useProjectImages hook
+  const { images, loading: imagesLoading, error: imagesError, reload } = useProjectImages(id);
 
   useEffect(() => {
     if (!id) return;
@@ -55,12 +59,8 @@ export default function ProjectDetailPage() {
   const loadProjectData = async () => {
     setLoading(true);
     try {
-      const [projectRes, imagesRes] = await Promise.all([
-        axios.get(`/api/project/${id}`),
-        axios.get(`/api/project/${id}/images`)
-      ]);
+      const projectRes = await axios.get(`/api/project/${id}`);
       setProject(projectRes.data);
-      setImages(imagesRes.data || []);
     } catch (err: any) {
       setError(err.response?.data?.error || 'ไม่พบโปรเจ็ค');
     } finally {
@@ -74,23 +74,19 @@ export default function ProjectDetailPage() {
 
   const handleUpload = async () => {
     if (selectedFiles.length === 0) return;
-    
     setUploading(true);
     try {
       const formData = new FormData();
       selectedFiles.forEach(file => {
         formData.append('images', file);
       });
-
       await axios.post(`/api/project/${id}/upload-images`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
       // Reload images
-      const imagesRes = await axios.get(`/api/project/${id}/images`);
-      setImages(imagesRes.data || []);
+      reload();
       setSelectedFiles([]);
     } catch (err: any) {
       console.error('Upload error:', err);
@@ -322,25 +318,27 @@ export default function ProjectDetailPage() {
                 </div>
 
                 {/* Images Grid */}
-                {images.length > 0 ? (
+                {imagesLoading ? (
+                  <div className="text-center py-12">กำลังโหลดรูปภาพ...</div>
+                ) : imagesError ? (
+                  <div className="text-center py-12 text-red-500">{imagesError}</div>
+                ) : images.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {images.map((image) => (
+                    {images.map((image: ProjectImage) => (
                       <div key={image.id} className="group relative">
                         <img
                           src={image.file_path}
                           alt={image.file_name}
-                          className="w-full h-32 object-cover rounded-lg"
+                          className="w-full h-32 object-cover rounded-lg z-[100]" 
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-                            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                              <Eye className="h-4 w-4 text-gray-600" />
-                            </button>
-                            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </button>
-                          </div>
-                        </div>
+                        {/* ปุ่มแสดงภาพเต็มจอ */}
+                        <button
+                          onClick={() => setSelectedImage(image)}
+                          className="absolute top-2 right-2 bg-white bg-opacity-80 rounded-full p-1 shadow hover:bg-opacity-100 transition z-10"
+                          title="แสดงภาพเต็มจอ"
+                        >
+                          <Maximize2 className="h-4 w-4 text-gray-700" />
+                        </button>
                         <div className="mt-2 text-xs text-gray-500">
                           <div>{image.file_name}</div>
                           <div>{new Date(image.created_at).toLocaleDateString('th-TH')}</div>
@@ -356,6 +354,40 @@ export default function ProjectDetailPage() {
                     <Image className="mx-auto h-12 w-12 text-gray-400" />
                     <h3 className="mt-2 text-sm font-medium text-gray-900">ยังไม่มีรูปภาพ</h3>
                     <p className="mt-1 text-sm text-gray-500">เริ่มต้นโดยการอัปโหลดรูปภาพแรก</p>
+                  </div>
+                )}
+                <button onClick={reload} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">รีโหลดรูปภาพ</button>
+
+                {/* Modal แสดงภาพเต็มจอ */}
+                {selectedImage && (
+                  <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+                    onClick={() => setSelectedImage(null)}
+                  >
+                    <div
+                      className="relative max-w-3xl w-full mx-4"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={() => setSelectedImage(null)}
+                        className="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full p-2 shadow hover:bg-opacity-100 transition z-10"
+                        title="ปิด"
+                      >
+                        <X className="h-5 w-5 text-gray-700" />
+                      </button>
+                      <img
+                        src={selectedImage.file_path}
+                        alt={selectedImage.file_name}
+                        className="w-full max-h-[80vh] object-contain rounded-lg bg-white"
+                      />
+                      <div className="mt-4 text-center text-white">
+                        <div className="font-semibold">{selectedImage.file_name}</div>
+                        <div>{new Date(selectedImage.created_at).toLocaleDateString('th-TH')}</div>
+                        {selectedImage.users && (
+                          <div>โดย: {selectedImage.users.full_name || selectedImage.users.email}</div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

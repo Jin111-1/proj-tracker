@@ -3,16 +3,17 @@ import { createSupabaseServerClient } from '@/utils/supabaseCookie';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const response = NextResponse.next();
     const supabase = createSupabaseServerClient(req, response);
-    const { id } = params;
+    const { id } = await context.params;
 
     // ตรวจสอบ authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
+      console.error('Authentication error:', authError);
       return NextResponse.json({ error: 'ไม่พบผู้ใช้ที่ login' }, { status: 401 });
     }
 
@@ -24,6 +25,7 @@ export async function GET(
       .single();
 
     if (projectError || !project) {
+      console.error('Project not found error:', projectError);
       return NextResponse.json({ error: 'ไม่พบโปรเจ็ค' }, { status: 404 });
     }
 
@@ -31,30 +33,25 @@ export async function GET(
     const { data: images, error: imagesError } = await supabase
       .from('photos')
       .select(`
-        id,
-        file_name,
-        file_path,
-        file_size,
-        description,
-        created_at,
-        uploaded_by,
-        users!photos_uploaded_by_fkey(email, full_name)
+      *
       `)
       .eq('project_id', id)
       .order('created_at', { ascending: false });
 
     if (imagesError) {
+      console.error('Images fetch error:', imagesError);
       return NextResponse.json({ error: imagesError.message }, { status: 500 });
     }
 
     // สร้าง response ใหม่พร้อม cookies
-    const successResponse = NextResponse.json(images || []);
+    const successResponse = NextResponse.json({
+      status: 200,
+      message: 'ดึงรายการรูปภาพสำเร็จ',
+      data: images || [],
+      count: images ? images.length : 0
+    }, { status: 200 });
 
-    // คัดลอก cookies จาก response ที่สร้างไว้
-    const setCookieHeaders = response.headers.getSetCookie();
-    setCookieHeaders.forEach(cookie => {
-      successResponse.headers.append('Set-Cookie', cookie);
-    });
+
 
     return successResponse;
 
