@@ -268,25 +268,25 @@ export default function AdminDashboard() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       โปรเจ็ค
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       Access Code
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       สถานะ
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       ความคืบหน้า
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       งบประมาณ
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase tracking-wider">
                       วันที่สร้าง
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-black uppercase tracking-wider">
                       การดำเนินการ
                     </th>
                   </tr>
@@ -294,58 +294,35 @@ export default function AdminDashboard() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredProjects.map((project) => (
                     <tr key={project.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap text-black">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{project.name}</div>
-                          <div className="text-sm text-gray-500">{project.description || '-'}</div>
+                          <div className="text-sm font-medium text-black">{project.name}</div>
+                          <div className="text-sm text-black">{project.description || '-'}</div>
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-black">{project.access_code}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="font-mono text-sm text-gray-900">{project.access_code}</span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status)}`}>
-                          {getStatusText(project.status)}
-                        </span>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status)}`}>{getStatusText(project.status)}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${project.progress_percentage || 0}%` }}
-                            ></div>
+                            <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${project.progress_percentage || 0}%` }}></div>
                           </div>
-                          <span className="text-sm text-gray-900">{project.progress_percentage || 0}%</span>
+                          <span className="text-sm text-black">{project.progress_percentage || 0}%</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatCurrency(project.budget)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDate(project.created_at)}
-                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatCurrency(project.budget)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatDate(project.created_at)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-2">
-                          <button
-                            onClick={() => window.location.href = `/pages/project/${project.id}`}
-                            className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition"
-                            title="ดูรายละเอียด"
-                          >
+                          <button onClick={() => window.location.href = `/pages/project/${project.id}`} className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition" title="ดูรายละเอียด">
                             <Eye className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={() => handleEditProject(project)}
-                            className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition"
-                            title="แก้ไข"
-                          >
+                          <button onClick={() => handleEditProject(project)} className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition" title="แก้ไข">
                             <Edit className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={() => handleDeleteProject(project.id)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition"
-                            title="ลบ"
-                          >
+                          <button onClick={() => handleDeleteProject(project.id)} className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition" title="ลบ">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>

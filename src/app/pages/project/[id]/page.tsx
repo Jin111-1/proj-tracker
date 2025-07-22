@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Upload, Image, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Plus, Trash2, Eye, Maximize2, X } from 'lucide-react';
 import { useProjectImages } from '../../../hooks/useProjectsPhoto/page';
+import ExpensesSection from '@/app/pages/expensesSection/ExpensesSection';
 
 interface Project {
   id: string;
@@ -422,11 +423,7 @@ export default function ProjectDetailPage() {
 
             {/* Expenses Tab */}
             {activeTab === 'expenses' && (
-              <div className="text-center py-12">
-                <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">ระบบวิเคราะห์ต้นทุน</h3>
-                <p className="mt-1 text-sm text-gray-500">กำลังพัฒนา - จะเปิดใช้งานเร็วๆ นี้</p>
-              </div>
+              <ExpensesSection projectId={project.id} />
             )}
           </div>
         </div>
