@@ -1,12 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import type { SerializeOptions } from 'cookie';
 
 const isProd = process.env.NODE_ENV === 'production'
 
-interface CookieOptions {
-  maxAge?: number;
-  [key: string]: any;
-}
+interface CookieOptions extends Partial<SerializeOptions> {}
 
 const createCookieString = (key: string, value: string, options: CookieOptions = {}) => {
     let cookie = `${key}=${value}; Path=/; HttpOnly; SameSite=Lax`
