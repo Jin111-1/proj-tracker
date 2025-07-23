@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { type Project } from './useEditProject/page';
+import { type Project } from './useEditProject';
 
 export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([]);

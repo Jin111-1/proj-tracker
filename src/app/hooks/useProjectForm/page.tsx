@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCreateProject } from '@/app/hooks/useCreateProjects/page';
+import { useCreateProject } from '@/app/hooks/useCreateProjects';
 import { useRouter } from 'next/navigation';
 
 export interface ProjectFormData {

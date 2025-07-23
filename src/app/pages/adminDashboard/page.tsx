@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useProjects } from '@/app/hooks/useProjects/page';
-import { useAuth } from '@/app/hooks/useAuth/page';
+import { useAuth } from '@/app/hooks/useAuth';
 import { useProjectForm } from '@/app/hooks/useProjectForm/page';
 import { useProjectUtils } from '@/app/hooks/useProjectUtils/page';
-import { useEditProject, type Project } from '@/app/hooks/useEditProject/page';
+import { useEditProject, type Project } from '@/app/hooks/useEditProject';
 import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, DollarSign, Users, LogOut, X } from 'lucide-react';
 
 export default function AdminDashboard() {

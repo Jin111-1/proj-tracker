@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useAccessCodeLogin } from '@/app/hooks/useAccessCodeLogin/page'
-import { useAdminLogin } from '@/app/hooks/useAdminLogin/page'
+import { useAccessCodeLogin } from '@/app/hooks/useAccessCodeLogin'
+import { useAdminLogin } from '@/app/hooks/useAdminLogin'
 
 export default function LoginPage() {
   const [mode, setMode] = useState<'user' | 'admin'>('user')
