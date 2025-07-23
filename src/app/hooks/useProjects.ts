@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { type Project } from './useEditProject';
@@ -55,6 +56,6 @@ export function useProjects() {
     statusFilter,
     setStatusFilter,
     loadProjects,
-    stats
+    stats,
   };
 } 

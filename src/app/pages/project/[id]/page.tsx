@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Upload, Image, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Plus, Trash2, Eye, Maximize2, X } from 'lucide-react';
-import { useProjectImages } from '../../../hooks/useProjectsPhoto/page';
+import { useProjectImages } from '../../../hooks/useProjectsPhoto';
 import ExpensesSection from '@/app/pages/expensesSection/ExpensesSection';
 
 interface Project {

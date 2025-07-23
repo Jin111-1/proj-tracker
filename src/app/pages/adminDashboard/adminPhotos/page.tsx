@@ -1,5 +1,5 @@
 import React from 'react';
-import { useProjectImages } from '../../../hooks/useProjectsPhoto/page';
+import { useProjectImages } from '../../../hooks/useProjectsPhoto';
 
 const AdminPhotosPage = () => {
   // ตัวอย่าง: กำหนด projectId เป็น '1' (สามารถเปลี่ยนเป็น dynamic ได้ภายหลัง)

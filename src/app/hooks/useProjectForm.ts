@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react';
 import { useCreateProject } from '@/app/hooks/useCreateProjects';
 import { useRouter } from 'next/navigation';
