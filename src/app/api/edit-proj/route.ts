@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseCookie';
+import type { EditProjectPayload } from '@/app/hooks/useEditProject';
 
 
 export async function PUT(req: NextRequest) {
@@ -74,7 +75,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // เตรียมข้อมูลสำหรับ update
-    const updateData: any = {};
+    const updateData: EditProjectPayload = {} as EditProjectPayload;
     
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
@@ -147,8 +148,11 @@ export async function PUT(req: NextRequest) {
 
     return successResponse;
 
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 }
 
@@ -223,7 +227,10 @@ export async function DELETE(req: NextRequest) {
 
     return successResponse;
 
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 } 

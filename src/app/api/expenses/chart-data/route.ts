@@ -57,46 +57,22 @@ export async function GET(request: NextRequest) {
 
     if (groupBy === 'date') {
       // จัดกลุ่มตามวันที่
-      const expensesByDate = expenses?.reduce((acc, expense) => {
-        const date = expense.expense_date;
-        if (!acc[date]) {
-          acc[date] = {
-            date,
-            total: 0,
-            count: 0
-          };
-        }
-        acc[date].total += Number(expense.amount);
-        acc[date].count += 1;
+      const expensesByDate = expenses?.reduce((acc: Record<string, { date: string; total: number }>, curr: { expense_date: string; amount: number }) => {
+        const date = curr.expense_date;
+        if (!acc[date]) acc[date] = { date, total: 0 };
+        acc[date].total += curr.amount;
         return acc;
-      }, {} as any) || {};
-
-      chartData = Object.values(expensesByDate).map((item: any) => ({
-        name: item.date,
-        value: item.total,
-        count: item.count
-      }));
+      }, {});
+      chartData = Object.values(expensesByDate).map((item) => ({ ...item }));
     } else {
       // จัดกลุ่มตามหมวดหมู่
-      const expensesByCategory = expenses?.reduce((acc, expense) => {
-        const category = expense.category || 'ไม่มีหมวดหมู่';
-        if (!acc[category]) {
-          acc[category] = {
-            category,
-            total: 0,
-            count: 0
-          };
-        }
-        acc[category].total += Number(expense.amount);
-        acc[category].count += 1;
+      const expensesByCategory = expenses?.reduce((acc: Record<string, { category: string; total: number }>, curr: { category: string; amount: number }) => {
+        const category = curr.category || 'อื่นๆ';
+        if (!acc[category]) acc[category] = { category, total: 0 };
+        acc[category].total += curr.amount;
         return acc;
-      }, {} as any) || {};
-
-      chartData = Object.values(expensesByCategory).map((item: any) => ({
-        name: item.category,
-        value: item.total,
-        count: item.count
-      }));
+      }, {});
+      chartData = Object.values(expensesByCategory).map((item) => ({ ...item }));
     }
 
     // คำนวณสถิติเพิ่มเติม
@@ -125,8 +101,10 @@ export async function GET(request: NextRequest) {
     });
 
     return successResponse;
-  } catch (error) {
-    console.error('Error in chart data API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 } 

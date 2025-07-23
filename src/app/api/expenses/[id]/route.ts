@@ -115,7 +115,7 @@ export async function PUT(
     } = await request.json();
 
     // สร้าง object สำหรับอัปเดต
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (amount !== undefined) updateData.amount = Number(amount);
     if (description !== undefined) updateData.description = description;
     if (expense_date !== undefined) updateData.expense_date = expense_date;
@@ -154,9 +154,11 @@ export async function PUT(
     });
 
     return successResponse;
-  } catch (error) {
-    console.error('Error in expense API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 }
 

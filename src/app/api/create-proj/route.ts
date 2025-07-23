@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseCookie';
+import type { CreateProjectPayload } from '@/app/hooks/useCreateProjects';
 
 // ฟังก์ชันสร้าง access_code แบบสุ่ม
 function generateAccessCode(): string {
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
     
     // เตรียมข้อมูลสำหรับ insert
-    const insertData: any = {
+    const insertData: CreateProjectPayload & { created_by: string } = {
       name,
       description,
       access_code,
@@ -112,7 +113,10 @@ export async function POST(req: NextRequest) {
     })
 
     return successResponse;
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 }
