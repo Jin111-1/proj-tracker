@@ -55,8 +55,8 @@ export async function GET(
 
     return successResponse;
 
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Get images error:', err);
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 } 

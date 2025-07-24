@@ -72,7 +72,7 @@ export async function POST(
       const filePath = `project-images/${id}/${fileName}`;
 
       // อัปโหลดไฟล์ไปยัง Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('project-images')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -136,8 +136,10 @@ export async function POST(
 
     return successResponse;
 
-  } catch (err: any) {
-    console.error('Upload images error:', err);
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 } 

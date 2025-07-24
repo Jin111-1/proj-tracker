@@ -16,7 +16,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: error?.message || 'ไม่พบโปรเจ็ค' }, { status: 404 });
     }
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return NextResponse.json({ error: err.message || 'เกิดข้อผิดพลาด' }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 });
   }
 } 

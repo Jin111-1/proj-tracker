@@ -70,11 +70,11 @@ export async function POST(req: NextRequest) {
       created_by: userId,
       bucket_name: bucket_name || null,
       status: status || null,
-      progress_percentage: typeof progress_percentage === 'number' ? progress_percentage : progress_percentage ? Number(progress_percentage) : null,
+      progress_percentage: typeof progress_percentage === 'number' ? progress_percentage : progress_percentage ? Number(progress_percentage) : undefined,
       start_date: start_date || null,
       estimated_end_date: estimated_end_date || null,
       actual_end_date: actual_end_date || null,
-      budget: typeof budget === 'number' ? budget : budget ? Number(budget) : null,
+      budget: typeof budget === 'number' ? budget : budget ? Number(budget) : undefined,
     };
     
     // 3. Insert project (created_by = userId)

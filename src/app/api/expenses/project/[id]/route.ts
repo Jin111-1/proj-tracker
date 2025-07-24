@@ -73,7 +73,7 @@ export async function GET(
       acc[category].count += 1;
       acc[category].expenses.push(expense);
       return acc;
-    }, {} as any) || {};
+    }, {} as Record<string, unknown>) || {};
 
     const result = {
       project,

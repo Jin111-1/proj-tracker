@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Upload, Image, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Plus, Trash2, Eye, Maximize2, X } from 'lucide-react';
-import { useProjectImages } from '../../../hooks/useProjectsPhoto';
+import { Upload, Image as ImageIcon, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Eye, Maximize2, X } from 'lucide-react';
+import { useProjectImages, ProjectImage } from '../../../hooks/useProjectsPhoto';
 import ExpensesSection from '@/app/pages/expensesSection/ExpensesSection';
-
+import NextImage from 'next/image';
 interface Project {
   id: string;
   name: string;
@@ -20,20 +20,6 @@ interface Project {
   budget: number;
   bucket_name: string;
   created_at: string;
-}
-
-interface ProjectImage {
-  id: string;
-  file_name: string;
-  file_path: string;
-  file_size: number;
-  description: string;
-  created_at: string;
-  uploaded_by: string;
-  users: {
-    email: string;
-    full_name: string;
-  };
 }
 
 export default function ProjectDetailPage() {
@@ -50,24 +36,36 @@ export default function ProjectDetailPage() {
   const [selectedImage, setSelectedImage] = useState<ProjectImage | null>(null);
 
   // ใช้ useProjectImages hook
-  const { images, loading: imagesLoading, error: imagesError, reload } = useProjectImages(id);
+  const { images, loading: imagesLoading, error: imagesError, fetchImages } = useProjectImages(id);
+  console.log(images); // log array ทั้งหมด
+
+  const loadProjectData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const projectRes = await axios.get(`/api/project/${id}`);
+      setProject(projectRes.data);
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        typeof (err as { response?: { data?: { error?: string } } }).response?.data?.error === 'string'
+      ) {
+        setError((err as { response: { data: { error: string } } }).response.data.error);
+      } else if (err && typeof err === 'object' && 'message' in err) {
+        setError((err as { message?: string }).message || 'ไม่พบโปรเจ็ค');
+      } else {
+        setError('ไม่พบโปรเจ็ค');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
     loadProjectData();
   }, [id]);
-
-  const loadProjectData = async () => {
-    setLoading(true);
-    try {
-      const projectRes = await axios.get(`/api/project/${id}`);
-      setProject(projectRes.data);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'ไม่พบโปรเจ็ค');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleFileSelect = (files: File[]) => {
     setSelectedFiles(files);
@@ -87,11 +85,15 @@ export default function ProjectDetailPage() {
         },
       });
       // Reload images
-      reload();
+      fetchImages();
       setSelectedFiles([]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Upload error:', err);
-      alert('เกิดข้อผิดพลาดในการอัปโหลด');
+      if (err && typeof err === 'object' && 'message' in err) {
+        alert((err as { message?: string }).message || 'เกิดข้อผิดพลาดในการอัปโหลด');
+      } else {
+        alert('เกิดข้อผิดพลาดในการอัปโหลด');
+      }
     } finally {
       setUploading(false);
     }
@@ -192,7 +194,7 @@ export default function ProjectDetailPage() {
             <nav className="flex space-x-8 px-6">
               {[
                 { id: 'overview', label: 'ภาพรวม', icon: Eye },
-                { id: 'images', label: 'รูปภาพ', icon: Image },
+                { id: 'images', label: 'รูปภาพ', icon: ImageIcon },
                 { id: 'documents', label: 'เอกสาร', icon: FileText },
                 { id: 'messages', label: 'ข้อความ', icon: MessageSquare },
                 { id: 'appointments', label: 'นัดหมาย', icon: Calendar },
@@ -202,7 +204,7 @@ export default function ProjectDetailPage() {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id as typeof activeTab)}
                     className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === tab.id
                         ? 'border-blue-500 text-blue-600'
@@ -327,10 +329,12 @@ export default function ProjectDetailPage() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {images.map((image: ProjectImage) => (
                       <div key={image.id} className="group relative">
-                        <img
+                        <NextImage
                           src={image.file_path}
-                          alt={image.file_name}
-                          className="w-full h-32 object-cover rounded-lg z-[100]" 
+                          alt={image.file_name || 'project image'}
+                          width={400}
+                          height={128}
+                          className="w-full h-32 object-cover rounded-lg z-[100]"
                         />
                         {/* ปุ่มแสดงภาพเต็มจอ */}
                         <button
@@ -352,12 +356,12 @@ export default function ProjectDetailPage() {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Image className="mx-auto h-12 w-12 text-gray-400" />
+                    <NextImage className="mx-auto h-12 w-12 text-gray-400" src="/file.svg" alt="no image" width={48} height={48} />
                     <h3 className="mt-2 text-sm font-medium text-gray-900">ยังไม่มีรูปภาพ</h3>
                     <p className="mt-1 text-sm text-gray-500">เริ่มต้นโดยการอัปโหลดรูปภาพแรก</p>
                   </div>
                 )}
-                <button onClick={reload} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">รีโหลดรูปภาพ</button>
+                <button onClick={fetchImages} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">รีโหลดรูปภาพ</button>
 
                 {/* Modal แสดงภาพเต็มจอ */}
                 {selectedImage && (
@@ -367,7 +371,7 @@ export default function ProjectDetailPage() {
                   >
                     <div
                       className="relative max-w-3xl w-full mx-4"
-                      onClick={e => e.stopPropagation()}
+                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
                     >
                       <button
                         onClick={() => setSelectedImage(null)}
@@ -376,9 +380,11 @@ export default function ProjectDetailPage() {
                       >
                         <X className="h-5 w-5 text-gray-700" />
                       </button>
-                      <img
+                      <NextImage
                         src={selectedImage.file_path}
-                        alt={selectedImage.file_name}
+                        alt={selectedImage.file_name || 'project image'}
+                        width={800}
+                        height={600}
                         className="w-full max-h-[80vh] object-contain rounded-lg bg-white"
                       />
                       <div className="mt-4 text-center text-white">

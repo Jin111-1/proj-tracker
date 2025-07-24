@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useProjects } from '@/app/hooks/useProjects';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useProjectForm } from '@/app/hooks/useProjectForm';
-import { useProjectUtils } from '@/app/hooks/useProjectUtils/page';
+import { useProjectUtils } from '@/app/hooks/useProjectUtils/useProjectUtils';
 import { useEditProject, type Project, type EditProjectPayload } from '@/app/hooks/useEditProject';
 import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, DollarSign, Users, LogOut, X } from 'lucide-react';
 
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-black">{project.access_code}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status)}`}>{getStatusText(project.status)}</span>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(project.status || '')}`}>{getStatusText(project.status || '' )}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
@@ -312,8 +312,8 @@ export default function AdminDashboard() {
                           <span className="text-sm text-black">{project.progress_percentage || 0}%</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatCurrency(project.budget)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatDate(project.created_at)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatCurrency(project.budget || 0)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{formatDate(project.created_at || '')}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end space-x-2">
                           <button onClick={() => window.location.href = `/pages/project/${project.id}`} className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition" title="ดูรายละเอียด">
@@ -322,7 +322,7 @@ export default function AdminDashboard() {
                           <button onClick={() => handleEditProject(project)} className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition" title="แก้ไข">
                             <Edit className="h-4 w-4" />
                           </button>
-                          <button onClick={() => handleDeleteProject(project.id)} className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition" title="ลบ">
+                          <button onClick={() => handleDeleteProject(project.id || '')} className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition" title="ลบ">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>

@@ -4,9 +4,7 @@ import type { SerializeOptions } from 'cookie';
 
 const isProd = process.env.NODE_ENV === 'production'
 
-interface CookieOptions extends Partial<SerializeOptions> {}
-
-const createCookieString = (key: string, value: string, options: CookieOptions = {}) => {
+const createCookieString = (key: string, value: string, options: Partial<SerializeOptions> = {}) => {
     let cookie = `${key}=${value}; Path=/; HttpOnly; SameSite=Lax`
   
     if (isProd) cookie += '; Secure'
@@ -45,7 +43,7 @@ export const createSupabaseServerClient = (req: NextRequest, res: NextResponse, 
       {
         cookies: {
           get: (key: string) => req.cookies.get(key)?.value,
-          set: (key: string, value: string, options: CookieOptions = {}) => {
+          set: (key: string, value: string, options: Partial<SerializeOptions> = {}) => {
             const cookieString = createCookieString(key, value, {
               ...options,
               maxAge, // 👉 ส่ง maxAge เข้าไปอย่างชัดเจน

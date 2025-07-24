@@ -17,7 +17,7 @@ export function useAdminLogin() {
       } else {
         setAdminResult(`❌ ${response.data.error}`)
       }
-    } catch (err) {
+    } catch {
       setAdminResult('❌ เกิดข้อผิดพลาด')
     }
     setAdminLoading(false)

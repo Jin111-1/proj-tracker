@@ -19,7 +19,7 @@ export function useAccessCodeLogin() {
       } else {
         setAccessResult(`❌ ${response.data.error}`)
       }
-    } catch (err) {
+    } catch {
       setAccessResult('❌ เกิดข้อผิดพลาด')
     }
     setAccessLoading(false)

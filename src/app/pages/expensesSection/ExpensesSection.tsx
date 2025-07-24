@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import { useExpenses } from "@/app/hooks/useExpenses";
-import { useCategories } from "@/app/hooks/useCategories";
+import { useExpenses, Expense, ExpensePayload } from "@/app/hooks/useExpenses";
+import { useCategories, Category } from "@/app/hooks/useCategories";
 import { useState } from "react";
 
 interface ExpensesSectionProps {
@@ -11,48 +11,39 @@ interface ExpensesSectionProps {
 export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   const {
     expenses,
-    total,
     loading,
     error,
     fetchExpenses,
     addExpense,
     updateExpense,
     deleteExpense,
-    fetchChartData,
   } = useExpenses(projectId);
   const { categories, fetchCategories } = useCategories();
 
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Partial<ExpensePayload>>({});
   const [editId, setEditId] = useState<string | null>(null);
-  const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [chartGroup, setChartGroup] = useState<'date' | 'category'>('date');
 
   useEffect(() => {
     fetchExpenses();
     fetchCategories();
   }, [fetchExpenses, fetchCategories]);
 
-  useEffect(() => {
-    fetchChartData(chartGroup).then((res) => setChartData(res.chartData || []));
-  }, [fetchChartData, chartGroup, expenses]);
-
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editId) {
       await updateExpense(editId, form);
       setEditId(null);
     } else {
-      await addExpense({ ...form, project_id: projectId });
+      await addExpense({ ...form, project_id: projectId } as ExpensePayload);
     }
     setForm({});
   };
 
-  const handleEdit = (exp: any) => {
+  const handleEdit = (exp: Expense) => {
     setEditId(exp.id);
     setForm({
       amount: exp.amount,
@@ -105,8 +96,8 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           className="border px-2 py-1 rounded"
         >
           <option value="">เลือกหมวดหมู่</option>
-          {categories.map((cat: any) => (
-            <option key={cat.value} value={cat.value}>{cat.name}</option>
+          {categories.map((cat: Category) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
         </select>
         <input
@@ -159,31 +150,6 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           )}
         </tbody>
       </table>
-      <div className="mb-4 font-bold">ยอดรวมต้นทุน: <span className="text-blue-700">{total.toLocaleString()} บาท</span></div>
-      <div className="mb-2 flex gap-2 items-center">
-        <span>กราฟ:</span>
-        <button
-          className={`px-2 py-1 rounded ${chartType === 'bar' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setChartType('bar')}
-        >Bar</button>
-        <button
-          className={`px-2 py-1 rounded ${chartType === 'line' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          onClick={() => setChartType('line')}
-        >Line</button>
-        <select
-          value={chartGroup}
-          onChange={e => setChartGroup(e.target.value as 'date' | 'category')}
-          className="border px-2 py-1 rounded"
-        >
-          <option value="date">ตามวันที่</option>
-          <option value="category">ตามหมวดหมู่</option>
-        </select>
-      </div>
-      {/* กราฟ (placeholder) */}
-      <div className="border rounded bg-gray-50 p-4 min-h-[200px]">
-        <pre className="text-xs text-gray-600">{JSON.stringify(chartData, null, 2)}</pre>
-        {/* TODO: นำ library กราฟ เช่น Recharts มาแสดงจริง */}
-      </div>
     </div>
   );
 } 

@@ -16,9 +16,13 @@ export function useProjects() {
       setError(null);
       const response = await axios.get('/api/projects');
       setProjects(response.data || []);
-    } catch (err: any) {
-      console.error('Error loading projects:', err);
-      setError(err.message || 'เกิดข้อผิดพลาดในการโหลดโปรเจ็ค');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error('Error loading projects:', err);
+        setError(err.message || 'เกิดข้อผิดพลาดในการโหลดโปรเจ็ค');
+      } else {
+        setError('เกิดข้อผิดพลาดในการโหลดโปรเจ็ค');
+      }
     } finally {
       setLoading(false);
     }
@@ -31,8 +35,8 @@ export function useProjects() {
 
   // กรองโปรเจ็คตาม search และ status
   const filteredProjects = projects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.access_code.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.access_code?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || project.status === statusFilter;
     return matchesSearch && matchesStatus;
   });

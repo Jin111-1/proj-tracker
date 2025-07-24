@@ -2,8 +2,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
+export interface ProjectImage {
+  id: string;
+  data?: string;
+  file_name: string;
+  file_path: string;
+  file_size?: number;
+  description?: string;
+  created_at: string;
+  uploaded_by?: string;
+  users?: {
+    email?: string;
+    full_name?: string;
+  };
+}
+
 export function useProjectImages(projectId: string | undefined) {
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<ProjectImage[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,9 +28,14 @@ export function useProjectImages(projectId: string | undefined) {
     setError(null);
     try {
       const response = await axios.get(`/api/project/${projectId}/images`);
-      setImages(response.data || []);
-    } catch (err: any) {
-      setError(err.message || 'เกิดข้อผิดพลาดในการโหลดรูปภาพ');
+      console.log(response.data);
+      setImages(response.data.data as ProjectImage[]);
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'message' in err) {
+        setError((err as { message?: string }).message || 'เกิดข้อผิดพลาดในการโหลดรูปภาพ');
+      } else {
+        setError('เกิดข้อผิดพลาดในการโหลดรูปภาพ');
+      }
     } finally {
       setLoading(false);
     }

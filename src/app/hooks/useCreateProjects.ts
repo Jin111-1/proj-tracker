@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 export interface CreateProjectPayload {
   name: string;
@@ -18,7 +18,7 @@ export interface CreateProjectPayload {
 export function useCreateProject() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<AxiosResponse | null>(null);
 
   const createProject = async (payload: CreateProjectPayload) => {
     setLoading(true);
@@ -34,9 +34,14 @@ export function useCreateProject() {
       if (result.status !== 200) throw new Error(result.data.error || "เกิดข้อผิดพลาด");
       setData(result);
       return result;
-    } catch (err: any) {
-      setError(err.message || "เกิดข้อผิดพลาด");
-      throw err;
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "เกิดข้อผิดพลาด");
+        throw err;
+      } else {
+        setError("เกิดข้อผิดพลาด");
+        throw new Error("เกิดข้อผิดพลาด");
+      }
     } finally {
       setLoading(false);
     }

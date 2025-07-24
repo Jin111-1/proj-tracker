@@ -26,11 +26,11 @@ export async function POST(request: NextRequest) {
     const guestPassword = access_code // หรือจะใช้รหัสอื่นก็ได้
 
     // ตรวจสอบว่ามี user นี้อยู่แล้วหรือยัง
-    const { data: userData, error: userError } = await supabase
+    const { data: userData } = await supabase
       .from('users')
       .select('*')
       .eq('email', guestEmail)
-      .single()
+      .single();
 
     let userId = userData?.id
 
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: 'เกิดข้อผิดพลาด' }, { status: 500 })
   }
 }
