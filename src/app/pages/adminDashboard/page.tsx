@@ -5,7 +5,7 @@ import { useProjects } from '@/app/hooks/useProjects';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useProjectForm } from '@/app/hooks/useProjectForm';
 import { useProjectUtils } from '@/app/hooks/useProjectUtils/page';
-import { useEditProject, type Project } from '@/app/hooks/useEditProject';
+import { useEditProject, type Project, type EditProjectPayload } from '@/app/hooks/useEditProject';
 import { Plus, Eye, Edit, Trash2, Search, Filter, Calendar, DollarSign, Users, LogOut, X } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const updateData: any = {
+      const updateData: EditProjectPayload = {
         id: editingProject.id
       };
 
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
       if (name && name !== editingProject.name) updateData.name = name;
       if (description !== editingProject.description) updateData.description = description;
       if (access_code && access_code !== editingProject.access_code) updateData.access_code = access_code;
-      if (status && status !== editingProject.status) updateData.status = status;
+      if (status && status !== editingProject.status) updateData.status = status as EditProjectPayload['status'];
       if (progress_percentage !== (editingProject.progress_percentage || 0).toString()) {
         updateData.progress_percentage = Number(progress_percentage);
       }
