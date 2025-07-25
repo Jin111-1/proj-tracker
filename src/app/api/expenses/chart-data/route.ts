@@ -57,22 +57,22 @@ export async function GET(request: NextRequest) {
 
     if (groupBy === 'date') {
       // จัดกลุ่มตามวันที่
-      const expensesByDate = expenses?.reduce((acc: Record<string, { date: string; total: number }>, curr: { expense_date: string; amount: number }) => {
+      const expensesByDate = (expenses ?? []).reduce((acc: Record<string, { date: string; total: number }>, curr: { expense_date: string; amount: number }) => {
         const date = curr.expense_date;
         if (!acc[date]) acc[date] = { date, total: 0 };
         acc[date].total += curr.amount;
         return acc;
       }, {});
-      chartData = Object.values(expensesByDate).map((item) => ({ ...item }));
+      chartData = Object.values(expensesByDate);
     } else {
       // จัดกลุ่มตามหมวดหมู่
-      const expensesByCategory = expenses?.reduce((acc: Record<string, { category: string; total: number }>, curr: { category: string; amount: number }) => {
+      const expensesByCategory = (expenses ?? []).reduce((acc: Record<string, { category: string; total: number }>, curr: { category: string; amount: number }) => {
         const category = curr.category || 'อื่นๆ';
         if (!acc[category]) acc[category] = { category, total: 0 };
         acc[category].total += curr.amount;
         return acc;
       }, {});
-      chartData = Object.values(expensesByCategory).map((item) => ({ ...item }));
+      chartData = Object.values(expensesByCategory);
     }
 
     // คำนวณสถิติเพิ่มเติม
