@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useExpenses, Expense, ExpensePayload } from "@/app/hooks/useExpenses";
 import { useCategories, Category } from "@/app/hooks/useCategories";
 import { useState } from "react";
+import { ExpensesChart, ExpensesSummary, ExpensesTrend } from "./expensesChart";
 
 interface ExpensesSectionProps {
   projectId: string;
@@ -63,6 +64,15 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   return (
     <div className="p-4 border rounded bg-white mt-6 text-black">
       <h2 className="text-lg font-bold mb-2">รายการต้นทุน</h2>
+      
+      {/* กราฟค่าใช้จ่าย */}
+      <ExpensesChart projectId={projectId} />
+      
+      {/* สรุปค่าใช้จ่าย */}
+      <ExpensesSummary projectId={projectId} />
+      
+      {/* แนวโน้มค่าใช้จ่าย */}
+      <ExpensesTrend projectId={projectId} />
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
         <input
           name="description"
