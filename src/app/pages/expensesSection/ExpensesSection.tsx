@@ -61,7 +61,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   };
 
   return (
-    <div className="p-4 border rounded bg-white mt-6">
+    <div className="p-4 border rounded bg-white mt-6 text-black">
       <h2 className="text-lg font-bold mb-2">รายการต้นทุน</h2>
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
         <input

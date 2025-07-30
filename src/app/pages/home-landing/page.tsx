@@ -47,7 +47,7 @@ export default function LoginPage() {
 
         {/* ฟอร์ม Access Code */}
         {mode === 'user' && (
-          <div className="flex flex-col gap-4 animate-fade-in">
+          <div className="flex flex-col gap-4 animate-fade-in text-black">
             <label className="text-gray-700 font-medium">Access Code</label>
             <input
               type="text"
@@ -69,7 +69,7 @@ export default function LoginPage() {
 
         {/* ฟอร์ม Admin */}
         {mode === 'admin' && (
-          <div className="flex flex-col gap-4 animate-fade-in">
+          <div className="flex flex-col gap-4 animate-fade-in text-black">
             <label className="text-gray-700 font-medium">Email</label>
             <input
               type="email"
