@@ -1,7 +1,6 @@
 "use client";
 import { useEffect } from "react";
 import { useExpenses, Expense, ExpensePayload } from "@/app/hooks/useExpenses";
-import { useCategories, Category } from "@/app/hooks/useCategories";
 import { useState } from "react";
 import { ExpensesChart, ExpensesSummary, ExpensesTrend } from "./expensesChart";
 
@@ -19,15 +18,12 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
     updateExpense,
     deleteExpense,
   } = useExpenses(projectId);
-  const { categories, fetchCategories } = useCategories();
-
   const [form, setForm] = useState<Partial<ExpensePayload>>({});
   const [editId, setEditId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchExpenses();
-    fetchCategories();
-  }, [fetchExpenses, fetchCategories]);
+  }, [fetchExpenses]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -58,6 +54,18 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   const handleDelete = async (id: string) => {
     if (window.confirm("ยืนยันการลบรายการนี้?")) {
       await deleteExpense(id);
+    }
+  };
+
+  // ฟังก์ชันแปลงค่า category เป็นภาษาไทย
+  const getCategoryDisplayName = (category: string | null | undefined) => {
+    if (!category) return '-';
+    switch (category) {
+      case 'material': return 'วัสดุ';
+      case 'service': return 'บริการ';
+      case 'workers': return 'แรงงาน';
+      case 'utility': return 'สาธารณูปโภค';
+      default: return category;
     }
   };
 
@@ -106,9 +114,10 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           className="border px-2 py-1 rounded"
         >
           <option value="">เลือกหมวดหมู่</option>
-          {categories.map((cat: Category) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
+          <option value="material">วัสดุ (Material)</option>
+          <option value="service">บริการ (Service)</option>
+          <option value="workers">แรงงาน (Workers)</option>
+          <option value="utility">สาธารณูปโภค (Utility)</option>
         </select>
         <input
           name="vendor"
@@ -145,7 +154,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
               <td className="border px-2 py-1 text-black">{exp.description}</td>
               <td className="border px-2 py-1 text-right text-black">{Number(exp.amount).toLocaleString()}</td>
               <td className="border px-2 py-1 text-black">{exp.expense_date}</td>
-              <td className="border px-2 py-1 text-black">{exp.category}</td>
+              <td className="border px-2 py-1 text-black">{getCategoryDisplayName(exp.category)}</td>
               <td className="border px-2 py-1 text-black">{exp.vendor}</td>
               <td className="border px-2 py-1">
                 <button onClick={() => handleEdit(exp)} className="text-blue-600 underline mr-2">แก้ไข</button>

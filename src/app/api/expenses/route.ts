@@ -95,6 +95,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // ตรวจสอบ category validation
+    const validCategories = ['material', 'service', 'workers', 'utility'];
+    if (category && !validCategories.includes(category)) {
+      return NextResponse.json({ 
+        error: 'Invalid category. Must be one of: material, service, workers, utility, or null' 
+      }, { status: 400 });
+    }
+
     // ตรวจสอบว่าโปรเจ็กต์มีอยู่จริง
     const { data: project, error: projectError } = await supabase
       .from('projects')
