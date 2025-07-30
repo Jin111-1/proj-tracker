@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
       project_id,
       amount,
       description,
+      detail,
       expense_date,
       category,
       vendor
@@ -121,6 +122,7 @@ export async function POST(request: NextRequest) {
         project_id,
         amount: Number(amount),
         description,
+        detail: detail || null,
         expense_date,
         category: category || null,
         vendor: vendor || null,

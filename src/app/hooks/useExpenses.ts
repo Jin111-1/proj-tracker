@@ -8,6 +8,7 @@ export interface Expense {
   project_id: string;
   amount: number;
   description: string;
+  detail?: string | null;
   expense_date: string;
   category?: string | null;
   vendor?: string | null;
@@ -20,6 +21,7 @@ export interface ExpensePayload {
   project_id: string;
   amount: number;
   description: string;
+  detail?: string | null;
   expense_date: string;
   category?: string | null;
   vendor?: string | null;

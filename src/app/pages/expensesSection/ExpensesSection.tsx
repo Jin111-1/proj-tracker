@@ -25,7 +25,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
     fetchExpenses();
   }, [fetchExpenses]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -45,6 +45,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
     setForm({
       amount: exp.amount,
       description: exp.description,
+      detail: exp.detail,
       expense_date: exp.expense_date,
       category: exp.category,
       vendor: exp.vendor,
@@ -89,6 +90,14 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           placeholder="รายละเอียด"
           className="border px-2 py-1 rounded"
           required
+        />
+        <textarea
+          name="detail"
+          value={form.detail || ""}
+          onChange={handleChange}
+          placeholder="รายละเอียดเพิ่มเติม"
+          className="border px-2 py-1 rounded"
+          rows={2}
         />
         <input
           name="amount"
@@ -141,6 +150,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
         <thead>
           <tr className="bg-gray-100">
             <th className="border px-2 py-1 text-black">รายละเอียด</th>
+            <th className="border px-2 py-1 text-black">รายละเอียดเพิ่มเติม</th>
             <th className="border px-2 py-1 text-black">จำนวนเงิน</th>
             <th className="border px-2 py-1 text-black">วันที่</th>
             <th className="border px-2 py-1 text-black">หมวดหมู่</th>
@@ -152,10 +162,12 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           {expenses.map((exp) => (
             <tr key={exp.id}>
               <td className="border px-2 py-1 text-black">{exp.description}</td>
+              <td className="border px-2 py-1 text-black">{exp.detail || '-'}</td>
               <td className="border px-2 py-1 text-right text-black">{Number(exp.amount).toLocaleString()}</td>
               <td className="border px-2 py-1 text-black">{exp.expense_date}</td>
               <td className="border px-2 py-1 text-black">{getCategoryDisplayName(exp.category)}</td>
               <td className="border px-2 py-1 text-black">{exp.vendor}</td>
+              <td className="border px-2 py-1 text-black">{exp.detail}</td>
               <td className="border px-2 py-1">
                 <button onClick={() => handleEdit(exp)} className="text-blue-600 underline mr-2">แก้ไข</button>
                 <button onClick={() => handleDelete(exp.id)} className="text-red-600 underline">ลบ</button>
@@ -164,7 +176,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           ))}
           {expenses.length === 0 && (
             <tr>
-              <td colSpan={6} className="text-center text-gray-400 py-2">ไม่มีข้อมูล</td>
+              <td colSpan={7} className="text-center text-gray-400 py-2">ไม่มีข้อมูล</td>
             </tr>
           )}
         </tbody>

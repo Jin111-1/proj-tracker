@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS public.expenses (
   project_id UUID NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   amount NUMERIC NOT NULL,
   description VARCHAR NOT NULL,
+  detail TEXT,
   expense_date DATE NOT NULL,
   category VARCHAR,
   vendor VARCHAR,

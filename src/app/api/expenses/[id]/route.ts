@@ -109,6 +109,7 @@ export async function PUT(
     const {
       amount,
       description,
+      detail,
       expense_date,
       category,
       vendor
@@ -118,6 +119,7 @@ export async function PUT(
     const updateData: Record<string, unknown> = {};
     if (amount !== undefined) updateData.amount = Number(amount);
     if (description !== undefined) updateData.description = description;
+    if (detail !== undefined) updateData.detail = detail;
     if (expense_date !== undefined) updateData.expense_date = expense_date;
     if (category !== undefined) updateData.category = category;
     if (vendor !== undefined) updateData.vendor = vendor;
