@@ -20,6 +20,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   } = useExpenses(projectId);
   const [form, setForm] = useState<Partial<ExpensePayload>>({});
   const [editId, setEditId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'chart' | 'summary' | 'trend'>('chart');
 
   useEffect(() => {
     fetchExpenses();
@@ -70,18 +71,64 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
     }
   };
 
+  // ฟังก์ชันสำหรับแสดง content ตาม active tab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'chart':
+        return <ExpensesChart projectId={projectId} />;
+      case 'summary':
+        return <ExpensesSummary projectId={projectId} />;
+      case 'trend':
+        return <ExpensesTrend projectId={projectId} />;
+      default:
+        return <ExpensesChart projectId={projectId} />;
+    }
+  };
+
   return (
     <div className="p-4 border rounded bg-white mt-6 text-black">
       <h2 className="text-lg font-bold mb-2">รายการต้นทุน</h2>
       
-      {/* กราฟค่าใช้จ่าย */}
-      <ExpensesChart projectId={projectId} />
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-4">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab('chart')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'chart'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            กราฟค่าใช้จ่าย
+          </button>
+          <button
+            onClick={() => setActiveTab('summary')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'summary'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            สรุปค่าใช้จ่าย
+          </button>
+          <button
+            onClick={() => setActiveTab('trend')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'trend'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            แนวโน้มค่าใช้จ่าย
+          </button>
+        </nav>
+      </div>
       
-      {/* สรุปค่าใช้จ่าย */}
-      <ExpensesSummary projectId={projectId} />
-      
-      {/* แนวโน้มค่าใช้จ่าย */}
-      <ExpensesTrend projectId={projectId} />
+      {/* Tab Content */}
+      <div className="mb-4">
+        {renderTabContent()}
+      </div>
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
         <input
           name="description"
@@ -97,7 +144,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           onChange={handleChange}
           placeholder="รายละเอียดเพิ่มเติม"
           className="border px-2 py-1 rounded"
-          rows={2}
+         
         />
         <input
           name="amount"
@@ -123,10 +170,10 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           className="border px-2 py-1 rounded"
         >
           <option value="">เลือกหมวดหมู่</option>
-          <option value="material">วัสดุ (Material)</option>
-          <option value="service">บริการ (Service)</option>
-          <option value="workers">แรงงาน (Workers)</option>
-          <option value="utility">สาธารณูปโภค (Utility)</option>
+          <option value="material">Material</option>
+          <option value="service">Service</option>
+          <option value="workers">Workers</option>
+          <option value="utility">Utility</option>
         </select>
         <input
           name="vendor"
@@ -159,21 +206,20 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           </tr>
         </thead>
         <tbody>
-          {expenses.map((exp) => (
-            <tr key={exp.id}>
-              <td className="border px-2 py-1 text-black">{exp.description}</td>
-              <td className="border px-2 py-1 text-black">{exp.detail || '-'}</td>
-              <td className="border px-2 py-1 text-right text-black">{Number(exp.amount).toLocaleString()}</td>
-              <td className="border px-2 py-1 text-black">{exp.expense_date}</td>
-              <td className="border px-2 py-1 text-black">{getCategoryDisplayName(exp.category)}</td>
-              <td className="border px-2 py-1 text-black">{exp.vendor}</td>
-              <td className="border px-2 py-1 text-black">{exp.detail}</td>
-              <td className="border px-2 py-1">
-                <button onClick={() => handleEdit(exp)} className="text-blue-600 underline mr-2">แก้ไข</button>
-                <button onClick={() => handleDelete(exp.id)} className="text-red-600 underline">ลบ</button>
-              </td>
-            </tr>
-          ))}
+                     {expenses.map((exp) => (
+             <tr key={exp.id}>
+               <td className="border px-2 py-1 text-black">{exp.description}</td>
+               <td className="border px-2 py-1 text-black">{exp.detail || '-'}</td>
+               <td className="border px-2 py-1 text-right text-black">{Number(exp.amount).toLocaleString()}</td>
+               <td className="border px-2 py-1 text-black">{exp.expense_date}</td>
+               <td className="border px-2 py-1 text-black">{getCategoryDisplayName(exp.category)}</td>
+               <td className="border px-2 py-1 text-black">{exp.vendor}</td>
+               <td className="border px-2 py-1">
+                 <button onClick={() => handleEdit(exp)} className="text-blue-600 underline mr-2">แก้ไข</button>
+                 <button onClick={() => handleDelete(exp.id)} className="text-red-600 underline">ลบ</button>
+               </td>
+             </tr>
+           ))}
           {expenses.length === 0 && (
             <tr>
               <td colSpan={7} className="text-center text-gray-400 py-2">ไม่มีข้อมูล</td>
