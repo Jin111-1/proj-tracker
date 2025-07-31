@@ -86,7 +86,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
   };
 
   return (
-    <div className="p-4 border rounded bg-white mt-6 text-black">
+    <div className="p-4 border rounded bg-white mt-6 text-black border-gray-500">
       <h2 className="text-lg font-bold mb-2">รายการต้นทุน</h2>
       
       {/* Tab Navigation */}
@@ -129,13 +129,13 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
       <div className="mb-4">
         {renderTabContent()}
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 mb-4 items-end">
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 mb-4 items-end ">
         <input
           name="description"
           value={form.description || ""}
           onChange={handleChange}
-          placeholder="รายละเอียด"
-          className="border px-2 py-1 rounded"
+          placeholder="รายการ"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[120px]"
           required
         />
         <textarea
@@ -143,7 +143,7 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           value={form.detail || ""}
           onChange={handleChange}
           placeholder="รายละเอียดเพิ่มเติม"
-          className="border px-2 py-1 rounded"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[150px] resize-none"
          
         />
         <input
@@ -152,22 +152,29 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           value={form.amount || ""}
           onChange={handleChange}
           placeholder="จำนวนเงิน"
-          className="border px-2 py-1 rounded"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[100px]"
           required
+        />
+         <input
+          name="vendor"
+          value={form.vendor || ""}
+          onChange={handleChange}
+          placeholder="ร้านค้า/ผู้ขาย"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[120px]"
         />
         <input
           name="expense_date"
           type="date"
           value={form.expense_date || ""}
           onChange={handleChange}
-          className="border px-2 py-1 rounded"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[140px]"
           required
         />
         <select
           name="category"
           value={form.category || ""}
           onChange={handleChange}
-          className="border px-2 py-1 rounded"
+          className="border px-2 py-1 rounded h-10 w-auto min-w-[140px]"
         >
           <option value="">เลือกหมวดหมู่</option>
           <option value="material">Material</option>
@@ -175,18 +182,12 @@ export default function ExpensesSection({ projectId }: ExpensesSectionProps) {
           <option value="workers">Workers</option>
           <option value="utility">Utility</option>
         </select>
-        <input
-          name="vendor"
-          value={form.vendor || ""}
-          onChange={handleChange}
-          placeholder="ร้านค้า/ผู้ขาย"
-          className="border px-2 py-1 rounded"
-        />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded">
+       
+        <button type="submit" className="bg-blue-600 text-white px-4 py-1 rounded h-10">
           {editId ? "บันทึกการแก้ไข" : "เพิ่มรายการ"}
         </button>
         {editId && (
-          <button type="button" onClick={() => { setEditId(null); setForm({}); }} className="ml-2 text-gray-500 underline">
+          <button type="button" onClick={() => { setEditId(null); setForm({}); }} className="ml-2 text-gray-500 underline h-10 px-4 py-1 rounded border border-gray-300 hover:bg-gray-50">
             ยกเลิก
           </button>
         )}
