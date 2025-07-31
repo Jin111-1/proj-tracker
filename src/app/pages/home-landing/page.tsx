@@ -14,7 +14,7 @@ export default function LoginPage() {
     useAccessCodeLogin();
 
   // Admin
-  const [adminEmail, setAdminEmail] = useState("passawit53@gmail.com");
+  const [adminEmail, setAdminEmail] = useState("demo@example.com");
   const [adminPassword, setAdminPassword] = useState("123456jjj");
   const { adminLoading, adminResult, loginAdmin } = useAdminLogin();
 
@@ -249,7 +249,7 @@ export default function LoginPage() {
               <motion.input
                 type="email"
                 placeholder="Email"
-                value="Demo Email"
+                value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
                 className="w-full border border-green-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
                 variants={inputVariants}

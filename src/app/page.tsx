@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -185,15 +187,15 @@ export default function Home() {
             whileHover="hover"
             whileTap="tap"
           >
-            <Link 
-              href="/pages/home-landing"
+            <button 
+              onClick={() => router.push('/pages/home-landing')}
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-green-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <span>เริ่มต้นใช้งาน</span>
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
-            </Link>
+            </button>
           </motion.div>
           <motion.p 
             className="text-gray-500 mt-4 text-sm"
