@@ -175,7 +175,7 @@ export default function UserDashboard() {
                   </p>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-sm text-black">
                       <span className="text-gray-500">ความคืบหน้า:</span>
                       <span className="font-medium">
                         {project.progress_percentage || 0}%
@@ -191,7 +191,7 @@ export default function UserDashboard() {
                       ></div>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-sm text-black">
                       <span className="text-gray-500">วันที่เริ่ม:</span>
                       <span className="font-medium">
                         {formatDate(project.start_date || "")}

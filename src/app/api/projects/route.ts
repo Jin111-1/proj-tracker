@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
       // ถ้าเป็น guest user ให้ดึงโปรเจ็คที่ตรงกับ access code
       const accessCode = user.email?.split('@')[0];
       
-      console.log('Guest user email:', user.email);
-      console.log('Extracted access code:', accessCode);
+     
       
       // if (!accessCode) {
       //   return NextResponse.json({ error: 'ไม่พบ access code' }, { status: 401 });

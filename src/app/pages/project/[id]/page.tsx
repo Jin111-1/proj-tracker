@@ -37,7 +37,7 @@ export default function ProjectDetailPage() {
 
   // ใช้ useProjectImages hook
   const { images, loading: imagesLoading, error: imagesError, fetchImages } = useProjectImages(id);
-  console.log(images); // log array ทั้งหมด
+  
 
   const loadProjectData = useCallback(async () => {
     setLoading(true);
