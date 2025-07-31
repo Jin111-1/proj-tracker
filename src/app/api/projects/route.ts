@@ -15,11 +15,40 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // ดึงรายการโปรเจ็คทั้งหมด
-    const { data: projects, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
+    let projects;
+    let error;
+
+    // ตรวจสอบว่าเป็น admin หรือ guest user จาก email format
+    // admin จะมี email จริง ส่วน guest user จะมี email format: {access_code}@example.com
+    const isGuestUser = user.email?.includes('@example.com');
+    
+    if (isGuestUser) {
+      // ถ้าเป็น guest user ให้ดึงโปรเจ็คที่ตรงกับ access code
+      const accessCode = user.email?.split('@')[0];
+      
+      console.log('Guest user email:', user.email);
+      console.log('Extracted access code:', accessCode);
+      
+      if (!accessCode) {
+        return NextResponse.json({ error: 'ไม่พบ access code' }, { status: 401 });
+      }
+
+      const result = await supabase
+        .from('projects')
+        .select('*')
+        .eq('access_code', accessCode)
+        .order('created_at', { ascending: false });
+      projects = result.data;
+      error = result.error;
+    } else {
+      // ถ้าเป็น admin ให้ดึงโปรเจ็คทั้งหมด
+      const result = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+      projects = result.data;
+      error = result.error;
+    }
 
     if (error) {
       console.error('Error fetching projects:', error);

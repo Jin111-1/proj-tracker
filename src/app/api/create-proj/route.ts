@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
       access_code = generateAccessCode();
     }
     
+    // แปลง access_code เป็นตัวพิมพ์ใหญ่เสมอ
+    access_code = access_code.toUpperCase();
+    
     // ตรวจสอบว่า access_code ซ้ำหรือไม่
     const { data: existingProject, error: checkError } = await supabase
       .from('projects')
