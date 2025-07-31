@@ -29,9 +29,9 @@ export async function GET(request: NextRequest) {
       console.log('Guest user email:', user.email);
       console.log('Extracted access code:', accessCode);
       
-      if (!accessCode) {
-        return NextResponse.json({ error: 'ไม่พบ access code' }, { status: 401 });
-      }
+      // if (!accessCode) {
+      //   return NextResponse.json({ error: 'ไม่พบ access code' }, { status: 401 });
+      // }
 
       const result = await supabase
         .from('projects')
