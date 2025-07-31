@@ -2,14 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useProjects } from "@/app/hooks/useProjects";
 import { useProjectImages, ProjectImage } from "@/app/hooks/useProjectsPhoto";
 import { useProjectUtils } from "@/app/hooks/useProjectUtils/useProjectUtils";
 import {
   Eye,
   Calendar,
-  DollarSign,
-  Percent,
   Image as ImageIcon,
   Maximize2,
   X,
@@ -44,7 +41,7 @@ export default function UserDashboard() {
   const [selectedImage, setSelectedImage] = useState<ProjectImage | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "images">("overview");
 
-  const { formatDate, formatCurrency, getStatusColor, getStatusText } =
+  const { formatDate, getStatusColor, getStatusText } =
     useProjectUtils();
 
   // โหลดโปรเจ็คของผู้ใช้
@@ -75,7 +72,7 @@ export default function UserDashboard() {
   const handleLogout = async () => {
     try {
       await axios.post("/api/auth/logout");
-      router.push("/");
+      router.push("/pages/home-landing");
     } catch (error) {
       console.error("Logout error:", error);
     }

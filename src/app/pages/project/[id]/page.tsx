@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { Upload, Image as ImageIcon, FileText, MessageSquare, Calendar, DollarSign, ArrowLeft, Eye, Maximize2, X } from 'lucide-react';
+import { Upload, Image as ImageIcon, DollarSign, ArrowLeft, Eye, Maximize2, X } from 'lucide-react';
 import { useProjectImages, ProjectImage } from '../../../hooks/useProjectsPhoto';
 import ExpensesSection from '@/app/pages/expensesSection/ExpensesSection';
 import NextImage from 'next/image';
