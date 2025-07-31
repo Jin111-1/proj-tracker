@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 
 interface ExpenseSummary {
@@ -7,6 +7,11 @@ interface ExpenseSummary {
   total: number;
   count: number;
   percentage: number;
+}
+
+interface ChartDataItem {
+  category?: string;
+  total: number;
 }
 
 interface ExpensesSummaryProps {
@@ -18,7 +23,7 @@ export default function ExpensesSummary({ projectId }: ExpensesSummaryProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSummaryData = async () => {
+  const fetchSummaryData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -33,7 +38,7 @@ export default function ExpensesSummary({ projectId }: ExpensesSummaryProps) {
       
       // คำนวณเปอร์เซ็นต์
       const totalAmount = data.statistics.totalAmount;
-      const summary = data.chartData.map((item: any) => ({
+      const summary = data.chartData.map((item: ChartDataItem) => ({
         category: item.category || 'ไม่ระบุ',
         total: item.total,
         count: 0, // จะต้องดึงจาก API เพิ่มเติม
@@ -46,11 +51,11 @@ export default function ExpensesSummary({ projectId }: ExpensesSummaryProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     fetchSummaryData();
-  }, [projectId]);
+  }, [projectId, fetchSummaryData]);
 
   if (loading) {
     return (
@@ -128,12 +133,12 @@ export default function ExpensesSummary({ projectId }: ExpensesSummaryProps) {
       x: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: number | string) {
             return new Intl.NumberFormat('th-TH', {
               style: 'currency',
               currency: 'THB',
               minimumFractionDigits: 0,
-            }).format(value);
+            }).format(Number(value));
           },
         },
       },

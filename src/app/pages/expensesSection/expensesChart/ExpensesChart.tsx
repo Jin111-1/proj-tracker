@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -55,7 +55,7 @@ export default function ExpensesChart({ projectId }: ExpensesChartProps) {
   const [chartType, setChartType] = useState<'line' | 'bar' | 'doughnut'>('line');
   const [groupBy, setGroupBy] = useState<'date' | 'category'>('date');
 
-  const fetchChartData = async () => {
+  const fetchChartData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -73,11 +73,11 @@ export default function ExpensesChart({ projectId }: ExpensesChartProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId, groupBy]);
 
   useEffect(() => {
     fetchChartData();
-  }, [projectId, groupBy]);
+  }, [projectId, groupBy, fetchChartData]);
 
   if (loading) {
     return (
@@ -162,12 +162,12 @@ export default function ExpensesChart({ projectId }: ExpensesChartProps) {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: number | string) {
             return new Intl.NumberFormat('th-TH', {
               style: 'currency',
               currency: 'THB',
               minimumFractionDigits: 0,
-            }).format(value);
+            }).format(Number(value));
           },
         },
       },

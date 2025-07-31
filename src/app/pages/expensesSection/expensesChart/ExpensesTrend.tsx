@@ -1,11 +1,16 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Line } from 'react-chartjs-2';
 
 interface TrendData {
   date: string;
   total: number;
   cumulative: number;
+}
+
+interface ChartDataItem {
+  date: string;
+  total: number;
 }
 
 interface ExpensesTrendProps {
@@ -18,7 +23,7 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
   const [error, setError] = useState<string | null>(null);
   const [showCumulative, setShowCumulative] = useState(false);
 
-  const fetchTrendData = async () => {
+  const fetchTrendData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -33,7 +38,7 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
       
       // คำนวณค่า cumulative
       let cumulative = 0;
-      const trend = data.chartData.map((item: any) => {
+      const trend = data.chartData.map((item: ChartDataItem) => {
         cumulative += item.total;
         return {
           date: item.date,
@@ -48,11 +53,11 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     fetchTrendData();
-  }, [projectId]);
+  }, [projectId, fetchTrendData]);
 
   if (loading) {
     return (
@@ -140,7 +145,7 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
       },
       tooltip: {
         callbacks: {
-          label: function(context: any) {
+          label: function(context: { dataset: { label?: string }; parsed: { y: number } }) {
             const label = context.dataset.label || '';
             const value = context.parsed.y;
             return `${label}: ${new Intl.NumberFormat('th-TH', {
@@ -168,12 +173,12 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
           text: 'ค่าใช้จ่ายรายวัน (บาท)',
         },
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: number | string) {
             return new Intl.NumberFormat('th-TH', {
               style: 'currency',
               currency: 'THB',
               minimumFractionDigits: 0,
-            }).format(value);
+            }).format(Number(value));
           },
         },
       },
@@ -189,12 +194,12 @@ export default function ExpensesTrend({ projectId }: ExpensesTrendProps) {
           drawOnChartArea: false,
         },
         ticks: {
-          callback: function(value: any) {
+          callback: function(value: number | string) {
             return new Intl.NumberFormat('th-TH', {
               style: 'currency',
               currency: 'THB',
               minimumFractionDigits: 0,
-            }).format(value);
+            }).format(Number(value));
           },
         },
       },
