@@ -1,31 +1,31 @@
-# 🏠 Interior Tracker
+# �� Interior Tracker
 
-ระบบจัดการโปรเจ็คตกแต่งภายในที่ใช้งานง่ายและมีประสิทธิภาพ ติดตามความคืบหน้า จัดการงบประมาณ และควบคุมคุณภาพงานได้อย่างครบครัน
+An easy-to-use and efficient interior design project management system. Track progress, manage budgets, and control work quality comprehensively.
 
 ## 📌 Project Description
 
-Interior Tracker เป็นแพลตฟอร์มจัดการโปรเจ็คตกแต่งภายในที่ช่วยให้ผู้ใช้สามารถ:
+Interior Tracker is an interior design project management platform that helps users:
 
-- สร้างและจัดการโปรเจ็คตกแต่งภายในได้อย่างเป็นระบบ
-- ติดตามความคืบหน้าของงานแบบเรียลไทม์
-- จัดการงบประมาณและค่าใช้จ่ายได้อย่างแม่นยำ
-- อัปโหลดและจัดการรูปภาพงานได้อย่างเป็นระบบ
-- ดูรายงานและสถิติต่างๆ ในรูปแบบกราฟ
-- ระบบ Authentication ที่ปลอดภัยสำหรับ Admin และ Guest User
+- Create and manage interior design projects systematically
+- Track project progress in real-time
+- Manage budgets and expenses accurately
+- Upload and manage project images systematically
+- View reports and statistics in various chart formats
+- Secure authentication system for Admin and Guest Users
 
 ## 🧰 Technologies Used
 
 ### Frontend:
 - ⚛️ **Next.js 15.3.4** - React Framework
 - 🎨 **Tailwind CSS 4** - Utility-first CSS framework
-- 📊 **Chart.js & React-Chartjs-2** - สำหรับแสดงกราฟและสถิติ
-- 🖼️ **React-Dropzone** - สำหรับอัปโหลดไฟล์
-- ✂️ **React-Image-Crop** - สำหรับตัดแต่งรูปภาพ
+- 📊 **Chart.js & React-Chartjs-2** - For displaying charts and statistics
+- 🖼️ **React-Dropzone** - For file uploads
+- ✂️ **React-Image-Crop** - For image cropping
 
 ### Backend:
 - 🛠️ **Supabase** - PostgreSQL Database & Backend as a Service
-- 🔐 **Supabase Auth** - ระบบ Authentication
-- 📁 **Supabase Storage** - จัดเก็บไฟล์และรูปภาพ
+- 🔐 **Supabase Auth** - Authentication system
+- 📁 **Supabase Storage** - File and image storage
 
 ### Development Tools:
 - 🔧 **TypeScript** - Type safety
@@ -35,34 +35,34 @@ Interior Tracker เป็นแพลตฟอร์มจัดการโป
 ## 🌟 Key Features
 
 ### 🔐 User Management
-- **ระบบ Authentication**: ลงทะเบียน, เข้าสู่ระบบ, จัดการโปรไฟล์
-- **Role-based Access**: Admin และ Guest User
-- **Access Code System**: สำหรับให้ลูกค้าเข้าถึงโปรเจ็คได้
+- **Authentication System**: Register, login, profile management
+- **Role-based Access**: Admin and Guest User
+- **Access Code System**: For clients to access projects
 
 ### 📊 Project Management
-- **สร้างโปรเจ็ค**: กำหนดชื่อ, คำอธิบาย, งบประมาณ, วันที่
-- **ติดตามความคืบหน้า**: แสดงเปอร์เซ็นต์ความคืบหน้าแบบเรียลไทม์
-- **สถานะโปรเจ็ค**: กำลังดำเนินการ, เสร็จสิ้น, ยกเลิก
-- **จัดการรูปภาพ**: อัปโหลด, ดู, จัดการรูปภาพงาน
+- **Create Projects**: Define name, description, budget, dates
+- **Track Progress**: Display real-time progress percentage
+- **Project Status**: In Progress, Completed, Cancelled
+- **Image Management**: Upload, view, manage project images
 
 ### 💰 Expense Management
-- **บันทึกค่าใช้จ่าย**: เพิ่ม, แก้ไข, ลบค่าใช้จ่าย
-- **หมวดหมู่ค่าใช้จ่าย**: จัดกลุ่มค่าใช้จ่ายตามประเภท
-- **กราฟและสถิติ**: แสดงข้อมูลในรูปแบบกราฟแท่ง, เส้น, วงกลม
-- **รายงานสรุป**: สถิติรวม, แนวโน้ม, การเปรียบเทียบ
+- **Record Expenses**: Add, edit, delete expenses
+- **Expense Categories**: Group expenses by type
+- **Charts and Statistics**: Display data in bar, line, and pie charts
+- **Summary Reports**: Total statistics, trends, comparisons
 
 ### 📈 Analytics & Reporting
-- **Dashboard**: แสดงภาพรวมโปรเจ็คทั้งหมด
-- **กราฟความคืบหน้า**: ติดตามความคืบหน้าตามเวลา
-- **สถิติค่าใช้จ่าย**: วิเคราะห์ค่าใช้จ่ายตามหมวดหมู่และเวลา
-- **รายงานสรุป**: ส่งออกข้อมูลสำหรับการวิเคราะห์
+- **Dashboard**: Display overview of all projects
+- **Progress Charts**: Track progress over time
+- **Expense Statistics**: Analyze expenses by category and time
+- **Summary Reports**: Export data for analysis
 
 ## 💡 Why These Technologies?
 
-- **Next.js & React**: สำหรับการพัฒนาเว็บแอปพลิเคชันที่รวดเร็ว, SEO-friendly และมีประสิทธิภาพ
-- **Supabase**: ให้บริการ Backend ที่ครบครัน, ปลอดภัย และใช้งานง่าย
-- **Tailwind CSS**: ช่วยในการออกแบบ UI ที่สวยงามและ responsive ได้อย่างรวดเร็ว
-- **Chart.js**: แสดงข้อมูลสถิติและกราฟได้อย่างสวยงามและเข้าใจง่าย
+- **Next.js & React**: For fast, SEO-friendly, and efficient web application development
+- **Supabase**: Provides comprehensive, secure, and easy-to-use backend services
+- **Tailwind CSS**: Helps create beautiful and responsive UI designs quickly
+- **Chart.js**: Displays statistics and charts beautifully and understandably
 
 ## 📚 Table of Contents
 
@@ -90,7 +90,7 @@ npm install
 ```
 
 ### 3. Set environment variables
-สร้างไฟล์ `.env.local` ในโฟลเดอร์หลักและกรอกค่าต่อไปนี้:
+Create a `.env.local` file in the main folder and fill in the following values:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -103,36 +103,36 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 npm run dev
 ```
 
-เปิดเบราว์เซอร์ที่: http://localhost:3000
+Open your browser at: http://localhost:3000
 
 ## 🎯 Usage Guide
 
-### สำหรับ Admin
-- **จัดการโปรเจ็ค**: สร้าง, แก้ไข, ลบโปรเจ็ค
-- **ดูสถิติ**: ดูภาพรวมโปรเจ็คทั้งหมดและค่าใช้จ่าย
-- **จัดการผู้ใช้**: ควบคุมการเข้าถึงระบบ
+### For Admin
+- **Manage Projects**: Create, edit, delete projects
+- **View Statistics**: View overview of all projects and expenses
+- **Manage Users**: Control system access
 
-### สำหรับ Guest User (ลูกค้า)
-- **เข้าถึงโปรเจ็ค**: ใช้ Access Code เพื่อเข้าถึงโปรเจ็ค
-- **ดูความคืบหน้า**: ติดตามความคืบหน้าของงาน
-- **ดูรูปภาพ**: ดูรูปภาพงานที่อัปโหลดแล้ว
+### For Guest User (Clients)
+- **Access Projects**: Use Access Code to access projects
+- **View Progress**: Track work progress
+- **View Images**: View uploaded project images
 
-### การใช้งานหลัก
-1. **สร้างโปรเจ็ค**: Admin สร้างโปรเจ็คใหม่พร้อม Access Code
-2. **แชร์ Access Code**: ส่ง Access Code ให้ลูกค้า
-3. **ติดตามงาน**: อัปโหลดรูปภาพและบันทึกความคืบหน้า
-4. **จัดการค่าใช้จ่าย**: บันทึกค่าใช้จ่ายและดูสถิติ
-5. **ดูรายงาน**: วิเคราะห์ข้อมูลผ่านกราฟและสถิติ
+### Main Usage
+1. **Create Project**: Admin creates new project with Access Code
+2. **Share Access Code**: Send Access Code to clients
+3. **Track Work**: Upload images and record progress
+4. **Manage Expenses**: Record expenses and view statistics
+5. **View Reports**: Analyze data through charts and statistics
 
 ## 📂 Project Architecture
 
 ```
 interior-tracker/
-├── 📦 inte-track/                    # โปรเจ็คหลัก
-│   ├── 🌐 public/                    # ไฟล์ static
-│   │   └── 🖼️ *.svg                 # ไอคอนและรูปภาพ
+├── 📦 inte-track/                    # Main project
+│   ├── 🌐 public/                    # Static files
+│   │   └── 🖼️ *.svg                 # Icons and images
 │   │
-│   ├── 💻 src/                       # โค้ดหลัก
+│   ├── 💻 src/                       # Main code
 │   │   ├── 📄 app/                   # Next.js App Router
 │   │   │   ├── 🔌 api/               # API Endpoints
 │   │   │   │   ├── 🔐 auth/          # Authentication APIs
@@ -147,14 +147,14 @@ interior-tracker/
 │   │   │   │   └── useProjectUtils/  # Utility hooks
 │   │   │   │
 │   │   │   ├── 📄 pages/             # Application Pages
-│   │   │   │   ├── 🏠 home-landing/  # หน้าหลัก
-│   │   │   │   ├── 👤 userDashboard/ # แดชบอร์ดผู้ใช้
-│   │   │   │   ├── 👨‍💼 adminDashboard/ # แดชบอร์ดแอดมิน
-│   │   │   │   ├── 🏗️ project/       # หน้าโปรเจ็ค
-│   │   │   │   └── 💰 expensesSection/ # หน้าจัดการค่าใช้จ่าย
+│   │   │   │   ├── 🏠 home-landing/  # Home page
+│   │   │   │   ├── 👤 userDashboard/ # User dashboard
+│   │   │   │   ├── 👨‍💼 adminDashboard/ # Admin dashboard
+│   │   │   │   ├── 🏗️ project/       # Project page
+│   │   │   │   └── 💰 expensesSection/ # Expense management page
 │   │   │   │
-│   │   │   ├── 📄 layout.tsx         # Layout หลัก
-│   │   │   ├── 📄 page.tsx           # หน้าแรก
+│   │   │   ├── 📄 layout.tsx         # Main layout
+│   │   │   ├── 📄 page.tsx           # Home page
 │   │   │   └── 🎨 globals.css        # Global styles
 │   │   │
 │   │   └── 🛠️ utils/                 # Utility functions
@@ -219,9 +219,9 @@ interior-tracker/
 
 ## 🙏 Acknowledgments
 
-- **Supabase** - สำหรับ Backend services ที่ครบครัน
-- **Next.js Team** - สำหรับ React framework ที่ยอดเยี่ยม
-- **Tailwind CSS** - สำหรับ CSS framework ที่ใช้งานง่าย
-- **Chart.js** - สำหรับ library แสดงกราฟที่สวยงาม
+- **Supabase** - For comprehensive backend services
+- **Next.js Team** - For the excellent React framework
+- **Tailwind CSS** - For the easy-to-use CSS framework
+- **Chart.js** - For the beautiful chart display library
 
 ---
