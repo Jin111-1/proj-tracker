@@ -66,24 +66,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 opacity-20"
-        animate={{
-          background: [
-            "radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.5) 0%, transparent 50%)",
-            "radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.5) 0%, transparent 50%)",
-            "radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.5) 0%, transparent 50%)",
-            "radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.5) 0%, transparent 50%)",
-          ],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
 
       <motion.div 
         className="max-w-4xl w-full"
