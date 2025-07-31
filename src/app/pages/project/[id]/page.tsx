@@ -195,9 +195,6 @@ export default function ProjectDetailPage() {
               {[
                 { id: 'overview', label: 'ภาพรวม', icon: Eye },
                 { id: 'images', label: 'รูปภาพ', icon: ImageIcon },
-                { id: 'documents', label: 'เอกสาร', icon: FileText },
-                { id: 'messages', label: 'ข้อความ', icon: MessageSquare },
-                { id: 'appointments', label: 'นัดหมาย', icon: Calendar },
                 { id: 'expenses', label: 'ต้นทุน', icon: DollarSign },
               ].map((tab) => {
                 const Icon = tab.icon;
@@ -397,33 +394,6 @@ export default function ProjectDetailPage() {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* Documents Tab */}
-            {activeTab === 'documents' && (
-              <div className="text-center py-12">
-                <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">ระบบเอกสาร</h3>
-                <p className="mt-1 text-sm text-gray-500">กำลังพัฒนา - จะเปิดใช้งานเร็วๆ นี้</p>
-              </div>
-            )}
-
-            {/* Messages Tab */}
-            {activeTab === 'messages' && (
-              <div className="text-center py-12">
-                <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">ระบบข้อความ</h3>
-                <p className="mt-1 text-sm text-gray-500">กำลังพัฒนา - จะเปิดใช้งานเร็วๆ นี้</p>
-              </div>
-            )}
-
-            {/* Appointments Tab */}
-            {activeTab === 'appointments' && (
-              <div className="text-center py-12">
-                <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">ระบบนัดหมาย</h3>
-                <p className="mt-1 text-sm text-gray-500">กำลังพัฒนา - จะเปิดใช้งานเร็วๆ นี้</p>
               </div>
             )}
 
