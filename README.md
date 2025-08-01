@@ -1,4 +1,4 @@
-# �� Interior Tracker
+#  Interior Tracker
 
 An easy-to-use and efficient interior design project management system. Track progress, manage budgets, and control work quality comprehensively.
 
