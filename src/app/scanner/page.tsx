@@ -15,6 +15,7 @@ export default function ScannerPage() {
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const lastDecodedRef = useRef<string>("");
 
   // Cleanup function
   const cleanup = useCallback(async () => {
@@ -31,94 +32,64 @@ export default function ScannerPage() {
     }
   }, []);
 
-  // เริ่มสแกนด้วยกล้องหลังอัตโนมัติเมื่อเข้าหน้า
-  useEffect(() => {
-    const startScanner = async () => {
-      try {
-        setErrorMsg(null);
+  // ฟังก์ชันเปิดกล้องสแกน (ใช้ซ้ำได้ทั้งตอนเข้าหน้าและกดปุ่ม)
+  const startScanner = useCallback(async () => {
+    try {
+      setErrorMsg(null);
 
-        // สร้าง instance ใหม่ทุกครั้ง
-        const html5QrCode = new Html5Qrcode("reader");
-        html5QrCodeRef.current = html5QrCode;
-
-        // ใช้ facingMode: "environment" เพื่อบังคับกล้องหลัง
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-          },
-          (decodedText) => {
-            setScanResult(decodedText);
-            setHistory(prev => [
-              { text: decodedText, timestamp: new Date() },
-              ...prev,
-            ]);
-
-            // สแกนเจอแล้ว → ปิดกล้องทันที
-            if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
-              html5QrCodeRef.current.stop().then(() => {
-                setIsCameraReady(false);
-              }).catch(err => console.warn("Stop after scan:", err));
-            }
-          },
-          () => {
-            // silent: เฟรมที่อ่าน QR ไม่เจอ → ปกติ ไม่ต้องทำอะไร
+      // ล้าง instance เก่าก่อน (ถ้ามี)
+      if (html5QrCodeRef.current) {
+        try {
+          if (html5QrCodeRef.current.isScanning) {
+            await html5QrCodeRef.current.stop();
           }
-        );
-
-        setIsCameraReady(true);
-      } catch (err) {
-        console.error("Camera start error:", err);
-        setErrorMsg(
-          "ไม่สามารถเปิดกล้องหลังได้ กรุณาอนุญาตการใช้กล้องในเบราว์เซอร์ หรือตรวจสอบว่าอุปกรณ์มีกล้องหลัง"
-        );
+          html5QrCodeRef.current.clear();
+        } catch { /* ignore */ }
       }
-    };
 
-    // หน่วงเวลาเล็กน้อยให้ DOM พร้อมก่อนเริ่มกล้อง
+      const html5QrCode = new Html5Qrcode("reader");
+      html5QrCodeRef.current = html5QrCode;
+
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 50,
+          qrbox: { width: 280, height: 280 },
+        },
+        (decodedText) => {
+          if (lastDecodedRef.current === decodedText) return;
+          lastDecodedRef.current = decodedText;
+
+          setScanResult(decodedText);
+          setHistory((prev) => [
+            { text: decodedText, timestamp: new Date() },
+            ...prev,
+          ]);
+
+          // ปิดกล้องทันทีหลังบันทึกประวัติเรียบร้อย
+          html5QrCode.stop().then(() => {
+            setIsCameraReady(false);
+            lastDecodedRef.current = "";
+          }).catch(err => console.warn("Stop error:", err));
+        },
+        () => {},
+      );
+
+      setIsCameraReady(true);
+    } catch (err) {
+      console.error("Camera start error:", err);
+      setErrorMsg("ไม่สามารถเปิดกล้องได้ กรุณาตรวจสอบสิทธิ์การเข้าถึง");
+    }
+  }, []);
+
+  // เปิดกล้องอัตโนมัติเมื่อเข้าหน้าครั้งแรก
+  useEffect(() => {
     const timer = setTimeout(startScanner, 300);
-
     return () => {
       clearTimeout(timer);
       cleanup();
     };
-  }, [cleanup]);
-
-  // เปิดกล้องใหม่อีกครั้ง
-  const restartScanner = async () => {
-    setScanResult(null);
-    setIsCameraReady(false);
-    setErrorMsg(null);
-
-    try {
-      if (!html5QrCodeRef.current) {
-        html5QrCodeRef.current = new Html5Qrcode("reader");
-      }
-
-      await html5QrCodeRef.current.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          setScanResult(decodedText);
-          setHistory(prev => [
-            { text: decodedText, timestamp: new Date() },
-            ...prev,
-          ]);
-          if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
-            html5QrCodeRef.current.stop().then(() => {
-              setIsCameraReady(false);
-            }).catch(err => console.warn("Stop after scan:", err));
-          }
-        },
-        () => {}
-      );
-      setIsCameraReady(true);
-    } catch (err) {
-      console.error("Restart error:", err);
-      setErrorMsg("ไม่สามารถเปิดกล้องได้ กรุณาลองใหม่");
-    }
-  };
+  }, [startScanner, cleanup]);
 
   const clearHistory = () => {
     setHistory([]);
@@ -142,12 +113,18 @@ export default function ScannerPage() {
           </div>
         )}
 
-        {/* Loading indicator */}
-        {!isCameraReady && !errorMsg && (
-          <div className="flex items-center justify-center p-6 mb-4 bg-gray-50 rounded-2xl">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent mr-3"></div>
-            <span className="text-sm text-gray-500 font-medium">กำลังเปิดกล้อง...</span>
-          </div>
+        {/* ปุ่มเปิดกล้องสแกนต่อ (แสดงเมื่อกล้องปิดแล้ว) */}
+        {!isCameraReady && !errorMsg && scanResult && (
+          <button
+            onClick={startScanner}
+            className="w-full mb-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm transition-all active:scale-[0.98] shadow-xl shadow-blue-100 flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            เปิดกล้องสแกนต่อ
+          </button>
         )}
 
         {/* ช่องมองภาพ */}
@@ -168,14 +145,6 @@ export default function ScannerPage() {
             <p className="text-lg text-gray-800 break-all font-bold leading-tight">
               {scanResult}
             </p>
-
-            {/* ปุ่มสแกนต่อ */}
-            <button
-              onClick={restartScanner}
-              className="mt-4 w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-all active:scale-[0.98]"
-            >
-              สแกนต่อ
-            </button>
           </div>
         )}
 

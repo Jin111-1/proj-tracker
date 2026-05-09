@@ -5,12 +5,23 @@ import mockData from "../../data/mockData.json";
 import { QRCodeSVG } from "qrcode.react";
 import Link from "next/link";
 
-export default function GeneratorPage() {
-  const [selectedText, setSelectedText] = useState<string>("");
+interface QrDataItem {
+  label: string;
+  value: string;
+}
 
-  // แปลงข้อมูลให้อยู่ในรูปแบบที่แสดงผลง่ายขึ้น
-  const set1Items = Object.entries(mockData.set1).map(([key, value]) => `${key}: ${value}`);
-  const set2Items = mockData.set2.map(item => `key-aaa: ${item["key-aaa"]}`);
+export default function GeneratorPage() {
+  const [selectedItem, setSelectedItem] = useState<QrDataItem | null>(null);
+
+  // แปลงข้อมูลให้อยู่ในรูปแบบ Object { label, value }
+  const set1Items: QrDataItem[] = Object.entries(mockData.set1).map(([key, value]) => ({
+    label: `${key}: ${value}`,
+    value: value
+  }));
+  const set2Items: QrDataItem[] = mockData.set2.map(item => ({
+    label: `key-aaa: ${item["key-aaa"]}`,
+    value: item["key-aaa"]
+  }));
   
   const allItems = [...set1Items, ...set2Items];
 
@@ -27,27 +38,27 @@ export default function GeneratorPage() {
                 <button
                   key={index}
                   className={`w-full text-left px-4 py-3 mb-2 rounded-md transition-colors font-medium ${
-                    selectedText === item 
+                    selectedItem?.label === item.label 
                       ? 'bg-blue-600 text-white shadow-md' 
                       : 'bg-white hover:bg-gray-100 text-gray-800 border border-gray-200'
                   }`}
-                  onClick={() => setSelectedText(item)}
+                  onClick={() => setSelectedItem(item)}
                 >
-                  {item}
+                  {item.label}
                 </button>
               ))}
             </div>
           </div>
           
           <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-8 bg-gray-50 h-[500px] md:mt-[44px]">
-            {selectedText ? (
+            {selectedItem ? (
               <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
                 <div className="bg-white p-6 rounded-2xl shadow-lg mb-6 border border-gray-100">
-                  <QRCodeSVG value={selectedText} size={256} />
+                  <QRCodeSVG value={selectedItem.value} size={256} />
                 </div>
                 <div className="bg-blue-50 px-6 py-3 rounded-lg border border-blue-100 w-full text-center">
                   <p className="text-sm font-semibold text-blue-600 mb-1">ข้อมูลที่เข้ารหัส:</p>
-                  <p className="text-md text-gray-800 break-all">{selectedText}</p>
+                  <p className="text-md text-gray-800 break-all">{selectedItem.value}</p>
                 </div>
               </div>
             ) : (
