@@ -65,7 +65,7 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     if (!id) return;
     loadProjectData();
-  }, [id]);
+  }, [id, loadProjectData]);
 
   const handleFileSelect = (files: File[]) => {
     setSelectedFiles(files);

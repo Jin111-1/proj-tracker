@@ -35,7 +35,7 @@ export default function ScannerPage() {
             return [{ text: decodedText, timestamp: new Date() }, ...prev];
           });
         },
-        (error) => {
+        () => {
           // ไม่ต้องแสดง error ทุกครั้งเพื่อลดสแปมในคอนโซล
         }
       );
