@@ -187,7 +187,7 @@ const ScannerZXing = () => {
     let isMounted = true;
 
     codeReader
-      .decodeFromVideoDevice(undefined, videoRef.current!, (res, err) => {
+      .decodeFromVideoDevice(null, videoRef.current!, (res, err) => {
         if (!isMounted) return;
         if (res) {
           setResult(res.getText());
