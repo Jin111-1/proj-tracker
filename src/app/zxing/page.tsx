@@ -185,6 +185,7 @@ const ScannerZXing = () => {
     // BrowserMultiFormatReader ใช้ได้ปกติ (เป็น Reader ไม่ใช่ Writer)
     const codeReader = new BrowserMultiFormatReader();
     let isMounted = true;
+    codeReader.timeBetweenDecodingAttempts = 2000; // สแกนทุก 200ms (5 FPS) เพื่อลดการใช้ CPU
 
     codeReader
       .decodeFromVideoDevice(null, videoRef.current!, (res, err) => {
