@@ -64,7 +64,7 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* 4. Mock Generator */}
+          {/* 4. qrcode.react (High Level) */}
           <Link href="/generator" className="group">
             <div className="h-full bg-white border-2 border-slate-100 rounded-[2rem] p-8 hover:border-amber-500 hover:shadow-xl hover:shadow-amber-50 transition-all flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
@@ -72,9 +72,24 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
-              <h2 className="text-xl font-black text-slate-800 mb-2">qrcode.react Page</h2>
+              <h2 className="text-xl font-black text-slate-800 mb-2">qrcode.react</h2>
               <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                หน้าสร้างรหัสจำลองที่รวบรวมฟีเจอร์พื้นฐานไว้ในที่เดียว
+                สร้างคิวอาร์โค้ดด้วย React Component ที่รองรับการใส่ Logo
+              </p>
+            </div>
+          </Link>
+
+          {/* 5. node-qrcode (Low Level) */}
+          <Link href="/qrcode" className="group">
+            <div className="h-full bg-white border-2 border-slate-100 rounded-[2rem] p-8 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-50 transition-all flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-cyan-100 text-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-black text-slate-800 mb-2">node-qrcode</h2>
+              <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                สร้างรหัส QR Code โดยใช้ Library พื้นฐานที่วาดบน Canvas โดยตรง
               </p>
             </div>
           </Link>
